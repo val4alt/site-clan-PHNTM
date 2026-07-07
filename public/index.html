@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHNTM Clan - Gestion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0b0c10; color: #c5c6c7; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #fff; text-transform: uppercase; margin-bottom: 20px; }
+        h1 span { color: #8a2be2; text-shadow: 0 0 10px rgba(138, 43, 226, 0.5); }
+        
+        /* Bouton Admin */
+        .admin-zone { margin-bottom: 20px; display: flex; gap: 10px; }
+        input, select, button { padding: 10px; border-radius: 5px; border: none; background: #1f2833; color: white; }
+        button { cursor: pointer; font-weight: bold; background: #8a2be2; }
+        button:hover { opacity: 0.9; }
+
+        /* Formulaire masqué par défaut */
+        #admin-panel { display: none; background: #151a21; padding: 20px; border-radius: 8px; margin-bottom: 20px; width: 100%; max-width: 600px; gap: 10px; flex-direction: column; }
+
+        /* Tableau */
+        table { width: 100%; max-width: 900px; background: #151a21; border-collapse: collapse; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; }
+        th { background: #1f2833; color: #66fcf1; text-transform: uppercase; }
+        tr { border-bottom: 1px solid #242c37; }
+        
+        /* Badges Rangs */
+        .badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; border: 1px solid currentColor; }
+        .rank-phantom { color: #9400d3; } .rank-immortal { color: #ff4757; } .rank-diamond { color: #00ced1; }
+        .rank-veteran { color: #ffa500; } .rank-challenger { color: #ff6b81; } .rank-rookie { color: #2ed573; }
+        
+        .btn-action { background: #ff4757; padding: 5px 10px; font-size: 0.8rem; margin-left: 5px;}
+        .btn-edit { background: #ffa500; }
+    </style>
+</head>
+<body>
+
+    <h1>Clan <span>PHNTM</span></h1>
+
+    <div class="admin-zone">
+        <input type="password" id="pass-input" placeholder="Mot de passe Admin pour modifier">
+        <button onclick="toggleAdmin()">Mode Édition</button>
+    </div>
+
+    <div id="admin-panel">
+        <h3 style="color:#66fcf1">Ajouter / Modifier un membre</h3>
+        <input type="hidden" id="player-id">
+        <input type="text" id="p-name" placeholder="Pseudo du joueur">
+        <select id="p-rank">
+            <option value="phantom">👑 PHANTOM</option>
+            <option value="immortal">⚡ IMMORTAL</option>
+            <option value="diamond">💎 DIAMOND</option>
+            <option value="veteran">⚔️ VETERAN</option>
+            <option value="challenger">🔥 CHALLENGER</option>
+            <option value="rookie">🔰 ROOKIE</option>
+        </select>
+        <input type="text" id="p-note" placeholder="Note / Rôle">
+        <button onclick="savePlayer()">Enregistrer</button>
+        <button onclick="resetForm()" style="background:#6c757d">Annuler</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Pseudo</th>
+                <th>Rang de Skill</th>
+                <th>Note</th>
+                <th class="admin-action" style="display:none">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="roster-body"></tbody>
+    </table>
+
+    <script>
+        let isAdmin = false;
+
+        async function loadPlayers() {
+            const res = await fetch('/api/players');
+            const players = await res.json();
+            const body = document.getElementById('roster-body');
+            body.innerHTML = '';
+
+            players.forEach(p => {
+                body.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold; color:white">${p.name}</td>
+                        <td><span class="badge rank-${p.rank}">${p.rank.toUpperCase()}</span></td>
+                        <td>${p.note}</td>
+                        <td class="admin-action" style="display:${isAdmin ? 'table-cell' : 'none'}">
+                            <button class="btn-action btn-edit" onclick="editPlayer('${p._id}', '${p.name}', '${p.rank}', '${p.note}')">Modifier</button>
+                            <button class="btn-action" onclick="deletePlayer('${p._id}')">Supprimer</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function toggleAdmin() {
+            const pass = document.getElementById('pass-input').value;
+            if(!pass) return alert("Rentre ton mot de passe !");
+            isAdmin = true;
+            document.getElementById('admin-panel').style.display = 'flex';
+            document.querySelectorAll('.admin-action').forEach(el => el.style.display = 'table-cell');
+            loadPlayers();
+        }
+
+        async function savePlayer() {
+            const id = document.getElementById('player-id').value;
+            const name = document.getElementById('p-name').value;
+            const rank = document.getElementById('p-rank').value;
+            const note = document.getElementById('p-note').value;
+            const password = document.getElementById('pass-input').value;
+
+            const res = await fetch('/api/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password, id, name, rank, note })
+            });
+            
+            if(res.ok) {
+                resetForm();
+                loadPlayers();
+            } else {
+                alert("Erreur (vérifie ton mot de passe)");
+            }
+        }
+
+        async function deletePlayer(id) {
+            if(!confirm("Supprimer ce joueur ?")) return;
+            const password = document.getElementById('pass-input').value;
+            await fetch('/api/players/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password, id })
+            });
+            loadPlayers();
+        }
+
+        function editPlayer(id, name, rank, note) {
+            document.getElementById('player-id').value = id;
+            document.getElementById('p-name').value = name;
+            document.getElementById('p-rank').value = rank;
+            document.getElementById('p-note').value = note;
+        }
+
+        function resetForm() {
+            document.getElementById('player-id').value = '';
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-note').value = '';
+        }
+
+        loadPlayers();
+    </script>
+</body>
+</html>

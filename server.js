@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connexion à Supabase (Pense bien à remplacer par tes vraies clés Supabase !)
-const SUPABASE_URL = "https://mzgiyycdlpjlmsmsesig.supabase.co/rest/v1/"; 
+const SUPABASE_URL = "https://mzgiyycdlpjlmsmsesig.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_cnU5IU4CYBAa0lqrJdseKQ_dqQ7IJY1"; 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 

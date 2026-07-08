@@ -5,66 +5,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHNTM Clan - Gestion</title>
     <style>
-        /* Fond du site avec un dégradé super sombre et futuriste */
-body {
-    background: linear-gradient(135deg, #0d0e12 0%, #1a1528 100%);
-    color: #ffffff;
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 20px;
-}
+        /* Style général Dark Gaming */
+        body {
+            background: linear-gradient(135deg, #0d0e12 0%, #1a1528 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
 
-/* Effet néon violet ultra lourd sur le nom du clan PHNTM */
-h1 {
-    font-size: 3rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #7c3aed;
-}
+        /* Titre avec lueur Néon Violette */
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #7c3aed;
+        }
 
-/* Modernisation du tableau (container principal) */
-.table-container {
-    background: rgba(25, 20, 35, 0.6);
-    backdrop-filter: blur(10px); /* Effet verre dépoli */
-    border: 1px solid rgba(168, 85, 247, 0.2);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
+        h1 span {
+            color: #a855f7;
+        }
 
-/* Style des lignes du tableau */
-.player-row {
-    background: rgba(255, 255, 255, 0.03);
-    border-left: 4px solid #a855f7; /* Petite barre violette à gauche */
-    margin-bottom: 10px;
-    padding: 15px;
-    border-radius: 6px;
-    transition: transform 0.2s, background 0.2s;
-}
+        /* Zone d'activation Admin */
+        .admin-zone {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-/* Animation quand on passe la souris sur un joueur */
-.player-row:hover {
-    transform: translateX(5px);
-    background: rgba(168, 85, 247, 0.1);
-}
+        /* Inputs et Selects modernisés */
+        input[type="text"], input[type="password"], select {
+            background: rgba(20, 15, 30, 0.8);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
 
-/* Boutons plus modernes */
-button {
-    background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
-    transition: all 0.3s ease;
-}
+        input:focus, select:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+        }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
-}
+        /* Panneau d'administration caché par défaut */
+        #admin-panel {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(25, 20, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 12px;
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+
+        #admin-panel h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Boutons au look moderne */
+        button {
+            background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+        }
+
+        /* Modernisation complète du Tableau */
+        table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 10px;
+        }
+
+        th {
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            text-align: left;
+        }
+
+        tr {
+            background: rgba(25, 20, 35, 0.5);
+            backdrop-filter: blur(5px);
+            transition: all 0.2s ease;
+        }
+
+        /* Effet au survol d'une ligne de joueur */
+        tbody tr:hover {
+            transform: translateX(4px);
+            background: rgba(168, 85, 247, 0.08);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(168, 85, 247, 0.1);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+            color: #e2e8f0;
+        }
+
+        td:first-child {
+            border-left: 4px solid #a855f7;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Boutons d'actions Admin (Modifier/Supprimer) */
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+        
+        .btn-edit {
+            background: #22c55e;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+        }
+        .btn-edit:hover {
+            box-shadow: 0 6px 15px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Style des badges de Rangs */
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+        }
+
+        .rank-phantom { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.4); text-shadow: 0 0 8px #a855f7; }
+        .rank-immortal { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.4); }
+        .rank-diamond { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); }
+        .rank-veteran { background: rgba(234, 179, 8, 0.15); color: #facc15; border-color: rgba(234, 179, 8, 0.4); }
+        .rank-challenger { background: rgba(249, 115, 22, 0.15); color: #fb923c; border-color: rgba(249, 115, 22, 0.4); }
+        .rank-rookie { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.4); }
     </style>
 </head>
 <body>
@@ -72,12 +196,12 @@ button:hover {
     <h1>Clan <span>PHNTM</span></h1>
 
     <div class="admin-zone">
-        <input type="password" id="pass-input" placeholder="Mot de passe Admin pour modifier">
+        <input type="password" id="pass-input" placeholder="Mot de passe Admin">
         <button onclick="toggleAdmin()">Mode Édition</button>
     </div>
 
     <div id="admin-panel">
-        <h3 style="color:#66fcf1">Ajouter / Modifier un membre</h3>
+        <h3 style="color:#a855f7">Ajouter / Modifier un membre</h3>
         <input type="hidden" id="player-id">
         <input type="text" id="p-name" placeholder="Pseudo du joueur">
         <select id="p-rank">
@@ -89,8 +213,10 @@ button:hover {
             <option value="rookie">🔰 ROOKIE</option>
         </select>
         <input type="text" id="p-note" placeholder="Note / Rôle">
-        <button onclick="savePlayer()">Enregistrer</button>
-        <button onclick="resetForm()" style="background:#6c757d">Annuler</button>
+        <div style="display: flex; gap: 10px; margin-top: 5px;">
+            <button onclick="savePlayer()" style="flex: 1;">Enregistrer</button>
+            <button onclick="resetForm()" style="background:#475569; box-shadow: none;">Annuler</button>
+        </div>
     </div>
 
     <table>
@@ -115,14 +241,15 @@ button:hover {
             body.innerHTML = '';
 
             players.forEach(p => {
+                // Adaptation aux colonnes de Supabase (pseudo, rank, note, id)
                 body.innerHTML += `
                     <tr>
-                        <td style="font-weight:bold; color:white">${p.name}</td>
-                        <td><span class="badge rank-${p.rank}">${p.rank.toUpperCase()}</span></td>
-                        <td>${p.note}</td>
+                        <td style="font-weight:bold; color:white">${p.pseudo}</td>
+                        <td><span class="badge rank-${p.rank}">${p.rank}</span></td>
+                        <td>${p.note || ''}</td>
                         <td class="admin-action" style="display:${isAdmin ? 'table-cell' : 'none'}">
-                            <button class="btn-action btn-edit" onclick="editPlayer('${p._id}', '${p.name}', '${p.rank}', '${p.note}')">Modifier</button>
-                            <button class="btn-action" onclick="deletePlayer('${p._id}')">Supprimer</button>
+                            <button class="btn-action btn-edit" onclick="editPlayer('${p.id}', '${p.pseudo}', '${p.rank}', '${p.note || ''}')">Modifier</button>
+                            <button class="btn-action" style="background:#ef4444; box-shadow:none;" onclick="deletePlayer('${p.id}')">Supprimer</button>
                         </td>
                     </tr>
                 `;
@@ -140,7 +267,7 @@ button:hover {
 
         async function savePlayer() {
             const id = document.getElementById('player-id').value;
-            const name = document.getElementById('p-name').value;
+            const pseudo = document.getElementById('p-name').value;
             const rank = document.getElementById('p-rank').value;
             const note = document.getElementById('p-note').value;
             const password = document.getElementById('pass-input').value;
@@ -148,21 +275,21 @@ button:hover {
             const res = await fetch('/api/players', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password, id, name, rank, note })
+                body: JSON.stringify({ password, id, pseudo, rank, note })
             });
             
             if(res.ok) {
                 resetForm();
                 loadPlayers();
             } else {
-                alert("Erreur (vérifie ton mot de passe)");
+                alert("Erreur lors de l'enregistrement.");
             }
         }
 
         async function deletePlayer(id) {
             if(!confirm("Supprimer ce joueur ?")) return;
             const password = document.getElementById('pass-input').value;
-            await fetch('/api/players/delete', {
+            const res = await fetch('/api/players/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password, id })
@@ -170,9 +297,9 @@ button:hover {
             loadPlayers();
         }
 
-        function editPlayer(id, name, rank, note) {
+        function editPlayer(id, pseudo, rank, note) {
             document.getElementById('player-id').value = id;
-            document.getElementById('p-name').value = name;
+            document.getElementById('p-name').value = pseudo;
             document.getElementById('p-rank').value = rank;
             document.getElementById('p-note').value = note;
         }

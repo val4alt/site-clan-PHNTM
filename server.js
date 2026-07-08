@@ -7,7 +7,7 @@ app.use(express.static('public'));
 
 // Base de données locale en mémoire (Ultra stable, pas de clé API)
 let playersDatabase = [
-    { pseudo: "Coco", rank: "Phantom", note: "Mouvement, Aim et Save" }
+    { pseudo: "Coco", rank: "Phantom", note: "Mouvement, Aim et Save parfait" }
 ];
 
 // 1. CHARGEMENT DES MEMBRES

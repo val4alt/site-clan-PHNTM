@@ -5,33 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PHNTM Clan - Gestion</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0b0c10; color: #c5c6c7; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { color: #fff; text-transform: uppercase; margin-bottom: 20px; }
-        h1 span { color: #8a2be2; text-shadow: 0 0 10px rgba(138, 43, 226, 0.5); }
-        
-        /* Bouton Admin */
-        .admin-zone { margin-bottom: 20px; display: flex; gap: 10px; }
-        input, select, button { padding: 10px; border-radius: 5px; border: none; background: #1f2833; color: white; }
-        button { cursor: pointer; font-weight: bold; background: #8a2be2; }
-        button:hover { opacity: 0.9; }
+        /* Fond du site avec un dégradé super sombre et futuriste */
+body {
+    background: linear-gradient(135deg, #0d0e12 0%, #1a1528 100%);
+    color: #ffffff;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
 
-        /* Formulaire masqué par défaut */
-        #admin-panel { display: none; background: #151a21; padding: 20px; border-radius: 8px; margin-bottom: 20px; width: 100%; max-width: 600px; gap: 10px; flex-direction: column; }
+/* Effet néon violet ultra lourd sur le nom du clan PHNTM */
+h1 {
+    font-size: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #7c3aed;
+}
 
-        /* Tableau */
-        table { width: 100%; max-width: 900px; background: #151a21; border-collapse: collapse; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; }
-        th { background: #1f2833; color: #66fcf1; text-transform: uppercase; }
-        tr { border-bottom: 1px solid #242c37; }
-        
-        /* Badges Rangs */
-        .badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; border: 1px solid currentColor; }
-        .rank-phantom { color: #9400d3; } .rank-immortal { color: #ff4757; } .rank-diamond { color: #00ced1; }
-        .rank-veteran { color: #ffa500; } .rank-challenger { color: #ff6b81; } .rank-rookie { color: #2ed573; }
-        
-        .btn-action { background: #ff4757; padding: 5px 10px; font-size: 0.8rem; margin-left: 5px;}
-        .btn-edit { background: #ffa500; }
+/* Modernisation du tableau (container principal) */
+.table-container {
+    background: rgba(25, 20, 35, 0.6);
+    backdrop-filter: blur(10px); /* Effet verre dépoli */
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Style des lignes du tableau */
+.player-row {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 4px solid #a855f7; /* Petite barre violette à gauche */
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 6px;
+    transition: transform 0.2s, background 0.2s;
+}
+
+/* Animation quand on passe la souris sur un joueur */
+.player-row:hover {
+    transform: translateX(5px);
+    background: rgba(168, 85, 247, 0.1);
+}
+
+/* Boutons plus modernes */
+button {
+    background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+}
     </style>
 </head>
 <body>

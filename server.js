@@ -1,61 +1,58 @@
 const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// On garde uniquement l'initialisation de base qui marchait au tout début
-const supabase = createClient(
-    "https://mzgiyvcdlpjlmsmsesig.supabase.co", 
-    "sb_publishable_cnU5IU4CYBAaQ1qrJdseKQ_dQ07IJY1"
-);
+const SUPABASE_URL = "https://mzgiyvcdlpjlmsmsesig.supabase.co"; 
+const SUPABASE_KEY = "sb_publishable_cnU5IU4CYBAaQ1qrJdseKQ_dQ07IJY1"; 
 
 app.use(express.json());
 app.use(express.static('public'));
 
-// Récupération classique
+// 1. CHARGEMENT DES MEMBRES
 app.get('/api/players', async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from('players')
-            .select('*');
-        if (error) return res.status(500).json({ error: error.message });
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+        });
+        if (!response.ok) return res.status(500).json({ error: "Erreur Supabase" });
+        const data = await response.json();
         res.json(data || []);
     } catch (err) {
-        res.status(500).json({ error: "Erreur" });
+        res.status(500).json({ error: "Crash serveur" });
     }
 });
 
-// L'ancienne méthode d'enregistrement directe et fonctionnelle
+// 2. ENREGISTREMENT SÉCURISÉ
 app.post('/api/players', async (req, res) => {
     const { pseudo, rank, note, password } = req.body;
 
-    // Vérification simple du mot de passe
     if (password !== "PHNTM") {
         return res.status(403).json({ success: false, error: "Clé incorrecte !" });
     }
 
     try {
-        // Enregistrement direct comme dans ton tout premier script
-        const { data, error } = await supabase
-            .from('players')
-            .insert([{ pseudo, rank, note }]);
+        // Envoi direct à l'API Supabase
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=merge-duplicates'
+            },
+            body: JSON.stringify({ pseudo, rank, note })
+        });
 
-        if (error) {
-            // Si le joueur existe déjà, on fait une mise à jour simple
-            const { error: updError } = await supabase
-                .from('players')
-                .update({ rank, note })
-                .eq('pseudo', pseudo);
-                
-            if (updError) return res.status(500).json({ error: updError.message });
-        }
-        
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: "Erreur" });
+        res.status(500).json({ error: "Erreur bdd" });
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Serveur en ligne sur le port ${PORT}`);
+    console.log(`Serveur démarré`);
 });

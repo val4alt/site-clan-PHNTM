@@ -1,42 +1,39 @@
 const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Connexion à Supabase avec la nouvelle clé Publishable standard
+// Informations de ton projet Supabase
 const SUPABASE_URL = "https://mzgiyvcdlpjlmsmsesig.supabase.co"; 
 const SUPABASE_KEY = "sb_publishable_cnU5IU4CYBAaQ1qrJdseKQ_dQ07IJY1"; 
 
-// Initialisation avec les options requises pour les nouvelles clés Supabase
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: {
-        persistSession: false,
-        autoRefreshToken: false
-    }
-});
-
-// Ton mot de passe secret pour le Mode Édition
-const ADMIN_PASSWORD = "PHNTM"; 
+// Mot de passe pour le Mode Édition
+const ADMIN_PASSWORD = "Val2008*"; 
 
 app.use(express.json());
 app.use(express.static('public'));
 
-// Récupérer les joueurs
+// 1. RECUPERER LES JOUEURS
 app.get('/api/players', async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from('players')
-            .select('*')
-            .order('id', { ascending: true });
-            
-        if (error) return res.status(500).json({ error: error.message });
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/players?order=id.asc`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error("Erreur Supabase API");
+        const data = await response.json();
         res.json(data || []);
     } catch (err) {
-        res.status(500).json({ error: "Erreur serveur" });
+        console.error(err);
+        res.status(500).json({ error: "Impossible de charger les données" });
     }
 });
 
-// Ajouter ou modifier un joueur
+// 2. AJOUTER OU MODIFIER UN JOUEUR
 app.post('/api/players', async (req, res) => {
     const { pseudo, rank, note, password } = req.body;
 
@@ -49,33 +46,52 @@ app.post('/api/players', async (req, res) => {
     }
 
     try {
-        const { data: existing } = await supabase
-            .from('players')
-            .select('*')
-            .eq('pseudo', pseudo)
-            .maybeSingle(); // Plus robuste que single() s'il n'y a rien
-
-        if (existing) {
-            const { error } = await supabase
-                .from('players')
-                .update({ rank: rank.toUpperCase(), note })
-                .eq('pseudo', pseudo);
-                
-            if (error) return res.status(500).json({ error: error.message });
-        } else {
-            const { error } = await supabase
-                .from('players')
-                .insert([{ pseudo, rank: rank.toUpperCase(), note }]);
-                
-            if (error) return res.status(500).json({ error: error.message });
-        }
+        // On vérifie d'abord si le joueur existe
+        const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/players?pseudo=eq.${encodeURIComponent(pseudo)}`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+        });
         
+        const existing = await checkRes.json();
+
+        if (existing && existing.length > 0) {
+            // S'il existe, on UPDATE
+            const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/players?pseudo=eq.${encodeURIComponent(pseudo)}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ rank: rank.toUpperCase(), note })
+            });
+            if (!updateRes.ok) throw new Error("Échec de la mise à jour");
+        } else {
+            // Sinon, on INSERT
+            const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ pseudo, rank: rank.toUpperCase(), note })
+            });
+            if (!insertRes.ok) throw new Error("Échec de l'insertion");
+        }
+
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: "Erreur bdd" });
+        console.error(err);
+        res.status(500).json({ error: "Erreur lors de l'enregistrement" });
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Serveur démarré sur le port ${PORT}`);
+    console.log(`Serveur actif sur le port ${PORT}`);
 });

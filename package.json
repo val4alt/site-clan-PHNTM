@@ -1,9 +1,9 @@
 {
-  "name": "clan-phntm",
+  "name": "site-clan",
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
     "express": "^4.19.2",
-    "nedb-promises": "^6.2.1"
+    "@supabase/supabase-client": "^2.43.0"
   }
 }

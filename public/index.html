@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHNTM Clan - Gestion & Communauté</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-dark: #08080d;
+        --panel-bg: #121218;
+        --panel-bg-alt: #161620;
+        --neon-violet: #a855f7;
+        --neon-violet-2: #6366f1;
+        --neon-glow: rgba(168, 85, 247, 0.4);
+        --text-main: #f3f4f6;
+        --text-muted: #9ca3af;
+        --border-soft: rgba(255,255,255,0.06);
+        --immortal: #f43f5e;
+        --diamant: #38bdf8;
+        --rookie: #22c55e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        min-height: 100vh;
+        padding: 2.5rem 1rem 1rem;
+        background-image:
+            radial-gradient(circle at 50% -10%, #23113f 0%, transparent 45%),
+            radial-gradient(circle at 100% 100%, #0e1a3a 0%, transparent 40%),
+            var(--bg-dark);
+        background-attachment: fixed;
+    }
+
+    .container { max-width: 1150px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 2.5rem; animation: fadeInDown 0.8s ease; }
+
+    .clan-badge-pill {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--neon-violet);
+        border: 1px solid rgba(168,85,247,0.4);
+        background: rgba(168,85,247,0.08);
+        padding: 0.3rem 0.9rem;
+        border-radius: 999px;
+        margin-bottom: 1rem;
+    }
+
+    .clan-logo-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 3.4rem;
+        font-weight: 700;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 0 10px #fff, 0 0 25px var(--neon-violet), 0 0 55px var(--neon-violet);
+        margin-bottom: 0.4rem;
+        line-height: 1;
+    }
+
+    .clan-subtitle { color: var(--text-muted); font-size: 1.05rem; letter-spacing: 1px; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
+        animation: fadeIn 1s ease;
+    }
+
+    .stat-card {
+        background: linear-gradient(160deg, var(--panel-bg), var(--panel-bg-alt));
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        padding: 1.4rem 1rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--stat-color, var(--neon-violet));
+        box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    }
+
+    .stat-val {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: var(--stat-color, var(--neon-violet));
+        text-shadow: 0 0 12px var(--stat-glow, var(--neon-glow));
+        margin-bottom: 0.15rem;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .main-layout { display: grid; grid-template-columns: 1fr; gap: 1.8rem; }
+
+    @media (min-width: 850px) {
+        .main-layout { grid-template-columns: 2fr 1fr; }
+    }
+
+    .panel {
+        background: linear-gradient(160deg, var(--panel-bg), var(--panel-bg-alt));
+        border: 1px solid var(--border-soft);
+        border-radius: 18px;
+        padding: 2rem;
+        box-shadow: 0 10px 34px rgba(0,0,0,0.5);
+        margin-bottom: 1.8rem;
+    }
+
+    .panel-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--neon-violet);
+        padding-left: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-box input {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        color: #fff;
+        width: 250px;
+        transition: 0.25s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--neon-violet);
+        outline: none;
+        box-shadow: 0 0 12px var(--neon-glow);
+    }
+
+    .admin-trigger-zone { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .btn {
+        background: rgba(168, 85, 247, 0.1);
+        border: 1px solid var(--neon-violet);
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    .btn:hover { background: var(--neon-violet); box-shadow: 0 0 15px var(--neon-glow); }
+
+    #admin-panel {
+        background: rgba(0,0,0,0.3);
+        border: 1px dashed rgba(168, 85, 247, 0.4);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .form-group input, .form-group select {
+        width: 100%;
+        background: #161622;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem;
+        border-radius: 6px;
+        color: #fff;
+        transition: 0.25s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--neon-violet);
+        box-shadow: 0 0 10px var(--neon-glow);
+    }
+
+    .table-container { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+
+    th {
+        padding: 1rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(255,255,255,0.06);
+    }
+
+    td { padding: 1.1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: 0.2s; }
+
+    tr:hover td { background: rgba(168, 85, 247, 0.04); color: #fff; }
+
+    .rank-badge {
+        display: inline-block;
+        padding: 0.28rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        white-space: nowrap;
+    }
+
+    .rank-phantom { background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+
+    .rank-immortal { background: linear-gradient(135deg, #fb7185, #be123c); color: #fff; }
+    .rank-immortal-mid { background: linear-gradient(135deg, #fda4af, #e11d48); color: #fff; opacity: 0.92; }
+    .rank-immortal-low { background: rgba(244,63,94,0.12); border: 1px solid var(--immortal); color: #fda4af; box-shadow: none; }
+
+    .rank-diamant { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; }
+    .rank-diamant-mid { background: linear-gradient(135deg, #bae6fd, #818cf8); color: #0b1120; opacity: 0.92; }
+    .rank-diamant-low { background: rgba(56,189,248,0.12); border: 1px solid var(--diamant); color: #7dd3fc; box-shadow: none; }
+
+    .rank-rookie { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; }
+    .rank-rookie-mid { background: linear-gradient(135deg, #86efac, #22c55e); color: #06210f; opacity: 0.92; }
+    .rank-rookie-low { background: rgba(34,197,94,0.12); border: 1px solid var(--rookie); color: #86efac; box-shadow: none; }
+
+    .rank-member { background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
+
+    .action-btn { padding: 0.35rem 0.7rem; font-size: 0.78rem; border-radius: 6px; }
+    .action-btn.danger { border-color: #ef4444; color: #ef4444; }
+    .action-btn.danger:hover { background: #ef4444; color: #fff; box-shadow: 0 0 12px rgba(239,68,68,0.4); }
+
+    .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        background: #5865F2;
+        color: white;
+        text-decoration: none;
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: bold;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(88, 101, 242, 0.25);
+    }
+
+    .social-btn:hover { transform: scale(1.03); box-shadow: 0 0 20px rgba(88, 101, 242, 0.5); }
+
+    footer {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        padding: 2rem 0 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 640px) {
+        .clan-logo-title { font-size: 2.3rem; letter-spacing: 3px; }
+        .panel { padding: 1.3rem; }
+        thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tr {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 0.8rem;
+        }
+        td {
+            border: none;
+            padding: 0.4rem 0.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        td::before {
+            content: attr(data-label);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="clan-badge-pill">Roster Officiel</div>
+        <div class="clan-logo-title">PHNTM</div>
+        <div class="clan-subtitle">Database Opérationnelle & Roster Officiel</div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label">Membres Actifs</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#a855f7; --stat-glow:rgba(168,85,247,0.4);">
+            <div class="stat-val" id="stat-phantom">0</div>
+            <div class="stat-label">Phantom</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#f43f5e; --stat-glow:rgba(244,63,94,0.4);">
+            <div class="stat-val" id="stat-immortal">0</div>
+            <div class="stat-label">Immortal</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#38bdf8; --stat-glow:rgba(56,189,248,0.4);">
+            <div class="stat-val" id="stat-diamant">0</div>
+            <div class="stat-label">Diamant</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#22c55e; --stat-glow:rgba(34,197,94,0.4);">
+            <div class="stat-val" id="stat-rookie">0</div>
+            <div class="stat-label">Rookie</div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <main class="panel">
+            <div class="panel-title">Roster du Clan</div>
+
+            <div class="controls-bar">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Rechercher un membre..." oninput="filterPlayers()">
+                </div>
+                <div class="admin-trigger-zone">
+                    <input type="password" id="admin-password" placeholder="Clé d'administration" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 8px; color: #fff; font-size: 0.85rem;">
+                    <button class="btn" onclick="toggleAdminPanel()">Mode Édition</button>
+                </div>
+            </div>
+
+            <div id="admin-panel">
+                <h4 style="color: var(--neon-violet); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;">Ajouter / Modifier un Joueur</h4>
+
+                <div class="form-grid">
+                    <div class="form-group"><input type="text" id="player-pseudo" placeholder="Pseudo exact"></div>
+                    <div class="form-group">
+                        <select id="player-rank">
+                            <option value="Phantom">Phantom</option>
+                            <optgroup label="Immortal">
+                                <option value="Immortal">Immortal</option>
+                                <option value="Immortal Mid">Immortal Mid</option>
+                                <option value="Immortal Low">Immortal Low</option>
+                            </optgroup>
+                            <optgroup label="Diamant">
+                                <option value="Diamant">Diamant</option>
+                                <option value="Diamant Mid">Diamant Mid</option>
+                                <option value="Diamant Low">Diamant Low</option>
+                            </optgroup>
+                            <optgroup label="Rookie">
+                                <option value="Rookie">Rookie</option>
+                                <option value="Rookie Mid">Rookie Mid</option>
+                                <option value="Rookie Low">Rookie Low</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group"><input type="text" id="player-note" placeholder="Commentaires / Notes"></div>
+                    <div class="form-group"><button class="btn" style="width:100%" onclick="savePlayer()">Enregistrer</button></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pseudo</th>
+                            <th>Rang de Skill</th>
+                            <th>Note / Remarques</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-tbody">
+                        <tr>
+                            <td colspan="4" style="text-align:center; color:var(--text-muted);">Chargement de la base de données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <aside>
+            <div class="panel">
+                <div class="panel-title">À Propos</div>
+                <p style="color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; margin-bottom: 1.5rem;">
+                    Bienvenue sur la plateforme officielle du clan <strong>PHNTM</strong>. Nous regroupons l'élite des joueurs compétitifs axés sur la performance, la réactivité et la maîtrise stratégique.
+                </p>
+                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.1); padding: 1rem; border-radius: 8px; font-size: 0.85rem;">
+                    <span style="color: var(--neon-violet); font-weight: bold;">Statut des recrutements :</span><br> Sur invitation ou via test de niveau uniquement.
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Communauté</div>
+                <a href="#" target="_blank" class="social-btn">
+                    <svg width="20" height="20" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,68.43,68.43,0,0,1-10.43-5c.87-.64,1.71-1.32,2.51-2a75.72,75.72,0,0,0,72.7,0c.8.71,1.64,1.39,2.51,2a68.21,68.21,0,0,1-10.43,5,80.73,80.73,0,0,0,6.63,10.85,105.46,105.46,0,0,0,31.05-18.83C129.9,49.88,124.06,27,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/></svg>
+                    Rejoindre le Discord
+                </a>
+            </div>
+        </aside>
+    </div>
+
+    <footer>© 2026 PHNTM Clan — Database Opérationnelle</footer>
+</div>
+
+<script>
+    let allPlayers = [];
+
+    const RANK_ORDER = ['Phantom', 'Immortal', 'Immortal Mid', 'Immortal Low', 'Diamant', 'Diamant Mid', 'Diamant Low', 'Rookie', 'Rookie Mid', 'Rookie Low'];
+
+    async function loadRoster() {
+        try {
+            const response = await fetch('/api/players');
+            allPlayers = await response.json();
+            updateStatistics(allPlayers);
+            renderTable(allPlayers);
+        } catch (err) {
+            console.error("Erreur de synchronisation :", err);
+        }
+    }
+
+    function getRankBadgeClass(rank) {
+        if (!rank) return 'rank-member';
+        const r = rank.trim().toLowerCase();
+        const map = {
+            'phantom': 'rank-phantom',
+            'immortal': 'rank-immortal',
+            'immortal mid': 'rank-immortal-mid',
+            'immortal low': 'rank-immortal-low',
+            'diamant': 'rank-diamant',
+            'diamant mid': 'rank-diamant-mid',
+            'diamant low': 'rank-diamant-low',
+            'rookie': 'rank-rookie',
+            'rookie mid': 'rank-rookie-mid',
+            'rookie low': 'rank-rookie-low',
+        };
+        if (map[r]) return map[r];
+        if (r.includes('phantom')) return 'rank-phantom';
+        if (r.includes('immortal')) return 'rank-immortal';
+        if (r.includes('diamant')) return 'rank-diamant';
+        if (r.includes('rookie')) return 'rank-rookie';
+        return 'rank-member';
+    }
+
+    function rankIndex(rank) {
+        const idx = RANK_ORDER.findIndex(r => r.toLowerCase() === (rank || '').trim().toLowerCase());
+        return idx === -1 ? RANK_ORDER.length : idx;
+    }
+
+    function sortPlayers(players) {
+        return [...players].sort((a, b) => {
+            const diff = rankIndex(a.rank) - rankIndex(b.rank);
+            if (diff !== 0) return diff;
+            return (a.pseudo || '').localeCompare(b.pseudo || '');
+        });
+    }
+
+    function renderTable(players) {
+        const tbody = document.getElementById('roster-tbody');
+        if (!players || players.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Aucun membre trouvé</td></tr>`;
+            return;
+        }
+
+        const sorted = sortPlayers(players);
+
+        tbody.innerHTML = sorted.map(p => `
+            <tr>
+                <td data-label="Pseudo" style="font-weight: 700; color: #fff;">${p.pseudo}</td>
+                <td data-label="Rang"><span class="rank-badge ${getRankBadgeClass(p.rank)}">${p.rank || 'Membre'}</span></td>
+                <td data-label="Note" style="color: var(--text-muted); font-size: 0.9rem;">${p.note || '-'}</td>
+                <td data-label="Actions" style="white-space: nowrap;">
+                    <button class="btn action-btn" onclick="editPlayer('${p.pseudo.replace(/'/g, "\\'")}')">Modifier</button>
+                    <button class="btn action-btn danger" onclick="deletePlayer('${p.pseudo.replace(/'/g, "\\'")}')">Supprimer</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateStatistics(players) {
+        if (!players) return;
+        document.getElementById('stat-total').innerText = players.length;
+        document.getElementById('stat-phantom').innerText = players.filter(p => p.rank && p.rank.toUpperCase().includes('PHANTOM')).length;
+        document.getElementById('stat-immortal').innerText = players.filter(p => p.rank && p.rank.toUpperCase().includes('IMMORTAL')).length;
+        document.getElementById('stat-diamant').innerText = players.filter(p => p.rank && p.rank.toUpperCase().includes('DIAMANT')).length;
+        document.getElementById('stat-rookie').innerText = players.filter(p => p.rank && p.rank.toUpperCase().includes('ROOKIE')).length;
+    }
+
+    function filterPlayers() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const filtered = allPlayers.filter(p =>
+            (p.pseudo && p.pseudo.toLowerCase().includes(query)) ||
+            (p.rank && p.rank.toLowerCase().includes(query)) ||
+            (p.note && p.note.toLowerCase().includes(query))
+        );
+        renderTable(filtered);
+    }
+
+    function toggleAdminPanel() {
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function savePlayer() {
+        const pseudo = document.getElementById('player-pseudo').value.trim();
+        const rank = document.getElementById('player-rank').value;
+        const note = document.getElementById('player-note').value.trim();
+        const password = document.getElementById('admin-password').value;
+
+        if (!pseudo) return alert("Veuillez saisir un pseudo !");
+
+        try {
+            const response = await fetch('/api/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pseudo, rank, note, password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('player-pseudo').value = '';
+                document.getElementById('player-note').value = '';
+                toggleAdminPanel();
+                loadRoster();
+            } else {
+                alert("Erreur lors de l'enregistrement : " + (result.error || "Clé incorrecte"));
+            }
+        } catch (err) {
+            alert("Erreur lors de l'enregistrement");
+        }
+    }
+
+    function editPlayer(pseudo) {
+        const player = allPlayers.find(p => p.pseudo === pseudo);
+        if (!player) return;
+
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = 'block';
+
+        document.getElementById('player-pseudo').value = player.pseudo;
+        document.getElementById('player-rank').value = player.rank || 'Rookie';
+        document.getElementById('player-note').value = player.note || '';
+
+        document.getElementById('admin-password').focus();
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function deletePlayer(pseudo) {
+        const password = document.getElementById('admin-password').value;
+        if (!password) {
+            alert("Entre la clé d'administration dans le champ prévu avant de supprimer un membre.");
+            return;
+        }
+
+        if (!confirm(`Supprimer définitivement "${pseudo}" du roster ?`)) return;
+
+        try {
+            const response = await fetch(`/api/players/${encodeURIComponent(pseudo)}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                loadRoster();
+            } else {
+                alert("Erreur lors de la suppression : " + (result.error || "Clé incorrecte"));
+            }
+        } catch (err) {
+            alert("Erreur lors de la suppression");
+        }
+    }
+
+    window.onload = loadRoster;
+</script>
+</body>
+</html>

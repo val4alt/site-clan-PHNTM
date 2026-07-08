@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 // Connexion à Supabase
 const SUPABASE_URL = "https://mzgiyvcdlpjlmsmsesig.supabase.co"; 
-const SUPABASE_KEY = "sb_publishable_cnU5IU4CYBAaQ1qrJdseKQ_dQ07IJY1"; // Ta clé publique anon
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16Z2l5eWNkbHBqbG1zbXNlc2lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0OTg4MTYsImV4cCI6MjA5OTA3NDgxNn0.jVxwJoX6g1qj2BZcREPIh0CPNvERY8YnJqPPyarJdhg"; // Ta clé publique anon
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Ton mot de passe secret pour le Mode Édition (Tu peux le changer ici)

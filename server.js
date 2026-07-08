@@ -2,57 +2,45 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const SUPABASE_URL = "https://mzgiyvcdlpjlmsmsesig.supabase.co"; 
-const SUPABASE_KEY = "sb_publishable_cnU5IU4CYBAaQ1qrJdseKQ_dQ07IJY1"; 
-
 app.use(express.json());
 app.use(express.static('public'));
 
+// Base de données locale en mémoire (Ultra stable, pas de clé API)
+let playersDatabase = [
+    { pseudo: "Coco", rank: "Phantom", note: "Mouvement, Aim et Save" }
+];
+
 // 1. CHARGEMENT DES MEMBRES
-app.get('/api/players', async (req, res) => {
-    try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
-            method: 'GET',
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`
-            }
-        });
-        if (!response.ok) return res.status(500).json({ error: "Erreur Supabase" });
-        const data = await response.json();
-        res.json(data || []);
-    } catch (err) {
-        res.status(500).json({ error: "Crash serveur" });
-    }
+app.get('/api/players', (req, res) => {
+    res.json(playersDatabase);
 });
 
-// 2. ENREGISTREMENT SÉCURISÉ
-app.post('/api/players', async (req, res) => {
+// 2. ENREGISTREMENT OU MODIFICATION
+app.post('/api/players', (req, res) => {
     const { pseudo, rank, note, password } = req.body;
 
     if (password !== "PHNTM") {
         return res.status(403).json({ success: false, error: "Clé incorrecte !" });
     }
 
-    try {
-        // Envoi direct à l'API Supabase
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
-            method: 'POST',
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'resolution=merge-duplicates'
-            },
-            body: JSON.stringify({ pseudo, rank, note })
-        });
-
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: "Erreur bdd" });
+    if (!pseudo) {
+        return res.status(400).json({ success: false, error: "Le pseudo est requis." });
     }
+
+    // On cherche si le joueur existe déjà
+    const index = playersDatabase.findIndex(p => p.pseudo.toLowerCase() === pseudo.toLowerCase());
+
+    if (index !== -1) {
+        // S'il existe, on le met à jour
+        playersDatabase[index] = { pseudo, rank, note };
+    } else {
+        // Sinon, on l'ajoute
+        playersDatabase.push({ pseudo, rank, note });
+    }
+
+    res.json({ success: true });
 });
 
 app.listen(PORT, () => {
-    console.log(`Serveur démarré`);
+    console.log(`Serveur actif sur le port ${PORT}`);
 });

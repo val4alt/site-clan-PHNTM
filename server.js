@@ -1,11 +1,11 @@
 const express = require('express');
-const { createClient } = require('@supabase/supabase-client');
+const { createClient } = require('@supabase/supabase-js'); // Correction ici !
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Connexion à Supabase (Remplace avec TES clés entre les guillemets !)
-const SUPABASE_URL = "https://discord.com/channels/@me/1518734940773290039/1524352183359897710";
-const SUPABASE_KEY = "sb_secret_zO_11SIG_xIPryKEzDAbQg_a5nCnOKR";
+// Connexion à Supabase (Pense bien à remplacer par tes vraies clés Supabase !)
+const SUPABASE_URL = "https://mzgiyycdlpjlmsmsesig.supabase.co/rest/v1/"; 
+const SUPABASE_KEY = "sb_publishable_cnU5IU4CYBAa0lqrJdseKQ_dqQ7IJY1"; 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 app.use(express.json());
@@ -21,7 +21,7 @@ app.get('/api/players', async (req, res) => {
 // Ajouter ou modifier un joueur
 app.post('/api/players', async (req, res) => {
     const { pseudo, rank, note } = req.body;
-    
+
     // On regarde si le joueur existe déjà
     const { data: existing } = await supabase.from('players').select('*').eq('pseudo', pseudo).single();
 

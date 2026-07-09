@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHNTM Clan - Gestion & Communauté</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-dark: #08080d;
+        --panel-bg: #121218;
+        --panel-bg-alt: #161620;
+        --neon-violet: #a855f7;
+        --neon-violet-2: #6366f1;
+        --neon-glow: rgba(168, 85, 247, 0.4);
+        --text-main: #f3f4f6;
+        --text-muted: #9ca3af;
+        --border-soft: rgba(255,255,255,0.06);
+        --immortal: #f43f5e;
+        --diamant: #38bdf8;
+        --rookie: #22c55e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        min-height: 100vh;
+        padding: 2.5rem 1rem 1rem;
+        background-image:
+            radial-gradient(circle at 50% -10%, #23113f 0%, transparent 45%),
+            radial-gradient(circle at 100% 100%, #0e1a3a 0%, transparent 40%),
+            var(--bg-dark);
+        background-attachment: fixed;
+    }
+
+    .container { max-width: 1150px; margin: 0 auto; position: relative; z-index: 1; }
+
+    header { text-align: center; margin-bottom: 2.5rem; animation: fadeInDown 0.8s ease; }
+
+    .clan-badge-pill {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--neon-violet);
+        border: 1px solid rgba(168,85,247,0.4);
+        background: rgba(168,85,247,0.08);
+        padding: 0.3rem 0.9rem;
+        border-radius: 999px;
+        margin-bottom: 1rem;
+    }
+
+    .clan-logo-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 3.4rem;
+        font-weight: 700;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+        background: linear-gradient(90deg, #fff, var(--neon-violet), #6366f1, #fff);
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 12px var(--neon-violet)) drop-shadow(0 0 26px rgba(168,85,247,0.5));
+        animation: titleGradient 6s ease infinite, titleFlicker 9s infinite;
+    }
+
+    .clan-subtitle { color: var(--text-muted); font-size: 1.05rem; letter-spacing: 1px; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
+        animation: fadeIn 1s ease;
+    }
+
+    .stat-card {
+        background: linear-gradient(160deg, var(--panel-bg), var(--panel-bg-alt));
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        padding: 1.4rem 1rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+        will-change: transform;
+    }
+
+    .stat-card:hover {
+        border-color: var(--stat-color, var(--neon-violet));
+        box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    }
+
+    .stat-val {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: var(--stat-color, var(--neon-violet));
+        text-shadow: 0 0 12px var(--stat-glow, var(--neon-glow));
+        margin-bottom: 0.15rem;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .main-layout { display: grid; grid-template-columns: 1fr; gap: 1.8rem; }
+
+    @media (min-width: 850px) {
+        .main-layout { grid-template-columns: 2fr 1fr; }
+    }
+
+    .panel {
+        background: linear-gradient(160deg, var(--panel-bg), var(--panel-bg-alt));
+        border: 1px solid var(--border-soft);
+        border-radius: 18px;
+        padding: 2rem;
+        box-shadow: 0 10px 34px rgba(0,0,0,0.5);
+        margin-bottom: 1.8rem;
+        transition: transform 0.15s ease, box-shadow 0.25s ease;
+        will-change: transform;
+        animation: panelGlow 7s ease-in-out infinite;
+    }
+
+    @keyframes panelGlow {
+        0%, 100% { box-shadow: 0 10px 34px rgba(0,0,0,0.5); border-color: var(--border-soft); }
+        50% { box-shadow: 0 10px 44px rgba(168,85,247,0.16); border-color: rgba(168,85,247,0.28); }
+    }
+
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    ::selection { background: var(--neon-violet); color: #fff; }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(var(--neon-violet), var(--neon-violet-2));
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(#c084fc, var(--neon-violet-2)); }
+
+    .panel-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--neon-violet);
+        padding-left: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-box input {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        color: #fff;
+        width: 250px;
+        transition: 0.25s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--neon-violet);
+        outline: none;
+        box-shadow: 0 0 12px var(--neon-glow);
+    }
+
+    .admin-trigger-zone { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .btn {
+        position: relative;
+        overflow: hidden;
+        background: rgba(168, 85, 247, 0.1);
+        border: 1px solid var(--neon-violet);
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.55);
+        transform: scale(0);
+        animation: rippleAnim 0.6s ease-out;
+        pointer-events: none;
+    }
+
+    .btn:hover { background: var(--neon-violet); box-shadow: 0 0 15px var(--neon-glow); }
+
+    #admin-panel {
+        background: rgba(0,0,0,0.3);
+        border: 1px dashed rgba(168, 85, 247, 0.4);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .form-group input, .form-group select {
+        width: 100%;
+        background: #161622;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem;
+        border-radius: 6px;
+        color: #fff;
+        transition: 0.25s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--neon-violet);
+        box-shadow: 0 0 10px var(--neon-glow);
+    }
+
+    .table-container { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+
+    th {
+        padding: 1rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(255,255,255,0.06);
+    }
+
+    td { padding: 1.1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: 0.2s; }
+
+    tr:hover td { background: rgba(168, 85, 247, 0.04); color: #fff; }
+
+    .rank-badge {
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        padding: 0.28rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        white-space: nowrap;
+    }
+
+    .rank-badge::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -75%;
+        width: 50%; height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+        transform: skewX(-20deg);
+    }
+
+    tr:hover .rank-badge::after { animation: shimmer 0.9s ease; }
+
+    .rank-phantom { background: linear-gradient(135deg, #a855f7, #6366f1); color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+
+    .rank-immortal { background: linear-gradient(135deg, #fb7185, #be123c); color: #fff; }
+    .rank-immortal-mid { background: linear-gradient(135deg, #fda4af, #e11d48); color: #fff; opacity: 0.92; }
+    .rank-immortal-low { background: rgba(244,63,94,0.12); border: 1px solid var(--immortal); color: #fda4af; box-shadow: none; }
+
+    .rank-diamant { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; }
+    .rank-diamant-mid { background: linear-gradient(135deg, #bae6fd, #818cf8); color: #0b1120; opacity: 0.92; }
+    .rank-diamant-low { background: rgba(56,189,248,0.12); border: 1px solid var(--diamant); color: #7dd3fc; box-shadow: none; }
+
+    .rank-rookie { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; }
+    .rank-rookie-mid { background: linear-gradient(135deg, #86efac, #22c55e); color: #06210f; opacity: 0.92; }
+    .rank-rookie-low { background: rgba(34,197,94,0.12); border: 1px solid var(--rookie); color: #86efac; box-shadow: none; }
+
+    .rank-member { background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
+
+    .action-btn { padding: 0.35rem 0.7rem; font-size: 0.78rem; border-radius: 6px; }
+    .action-btn.danger { border-color: #ef4444; color: #ef4444; }
+    .action-btn.danger:hover { background: #ef4444; color: #fff; box-shadow: 0 0 12px rgba(239,68,68,0.4); }
+
+    .dist-row { margin-bottom: 1.1rem; }
+    .dist-row:last-child { margin-bottom: 0; }
+
+    .dist-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        margin-bottom: 0.4rem;
+        color: var(--text-muted);
+    }
+
+    .dist-label span:first-child { color: var(--text-main); font-weight: 600; }
+
+    .dist-bar-track {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        height: 10px;
+        overflow: hidden;
+    }
+
+    .dist-bar-fill {
+        height: 100%;
+        border-radius: 20px;
+        transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 0 10px currentColor;
+    }
+
+    footer {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        padding: 2rem 0 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 640px) {
+        .clan-logo-title { font-size: 2.3rem; letter-spacing: 3px; }
+        .panel { padding: 1.3rem; }
+        thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tr {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 0.8rem;
+        }
+        td {
+            border: none;
+            padding: 0.4rem 0.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        td::before {
+            content: attr(data-label);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    #bg-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -2;
+        pointer-events: none;
+    }
+
+    #cursor-glow {
+        position: fixed;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(168,85,247,0.22), transparent 70%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 0;
+        mix-blend-mode: screen;
+        transition: opacity 0.3s;
+    }
+
+    @media (hover: none) {
+        #cursor-glow { display: none; }
+    }
+
+    .floating-ghost {
+        position: fixed;
+        bottom: -60px;
+        font-size: 1.4rem;
+        opacity: 0;
+        z-index: -1;
+        pointer-events: none;
+        filter: drop-shadow(0 0 6px var(--neon-violet));
+        animation: floatUp linear forwards;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 3px);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    @keyframes titleGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes titleFlicker {
+        0%, 91%, 100% { opacity: 1; }
+        92% { opacity: 0.65; }
+        93% { opacity: 1; }
+        94.5% { opacity: 0.45; }
+        95.5% { opacity: 1; }
+    }
+
+    @keyframes rippleAnim {
+        to { transform: scale(2.6); opacity: 0; }
+    }
+
+    @keyframes shimmer {
+        100% { left: 125%; }
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.4; }
+        90% { opacity: 0.4; }
+        100% { transform: translateY(-115vh) rotate(15deg); opacity: 0; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="clan-badge-pill">Roster Officiel</div>
+        <div class="clan-logo-title">PHNTM</div>
+        <div class="clan-subtitle">Database Opérationnelle & Roster Officiel</div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label">Membres Actifs</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#a855f7; --stat-glow:rgba(168,85,247,0.4);">
+            <div class="stat-val" id="stat-phantom">0</div>
+            <div class="stat-label">Phantom</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#f43f5e; --stat-glow:rgba(244,63,94,0.4);">
+            <div class="stat-val" id="stat-immortal">0</div>
+            <div class="stat-label">Immortal</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#38bdf8; --stat-glow:rgba(56,189,248,0.4);">
+            <div class="stat-val" id="stat-diamant">0</div>
+            <div class="stat-label">Diamant</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#22c55e; --stat-glow:rgba(34,197,94,0.4);">
+            <div class="stat-val" id="stat-rookie">0</div>
+            <div class="stat-label">Rookie</div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <main class="panel reveal">
+            <div class="panel-title">Roster du Clan</div>
+
+            <div class="controls-bar">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Rechercher un membre..." oninput="filterPlayers()">
+                </div>
+                <div class="admin-trigger-zone">
+                    <input type="password" id="admin-password" placeholder="Clé d'administration" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem; border-radius: 8px; color: #fff; font-size: 0.85rem;">
+                    <button class="btn" onclick="toggleAdminPanel()">Mode Édition</button>
+                </div>
+            </div>
+
+            <div id="admin-panel">
+                <h4 style="color: var(--neon-violet); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;">Ajouter / Modifier un Joueur</h4>
+
+                <div class="form-grid">
+                    <div class="form-group"><input type="text" id="player-pseudo" placeholder="Pseudo exact"></div>
+                    <div class="form-group">
+                        <select id="player-rank">
+                            <option value="Phantom">Phantom</option>
+                            <optgroup label="Immortal">
+                                <option value="Immortal">Immortal</option>
+                                <option value="Immortal Mid">Immortal Mid</option>
+                                <option value="Immortal Low">Immortal Low</option>
+                            </optgroup>
+                            <optgroup label="Diamant">
+                                <option value="Diamant">Diamant</option>
+                                <option value="Diamant Mid">Diamant Mid</option>
+                                <option value="Diamant Low">Diamant Low</option>
+                            </optgroup>
+                            <optgroup label="Rookie">
+                                <option value="Rookie">Rookie</option>
+                                <option value="Rookie Mid">Rookie Mid</option>
+                                <option value="Rookie Low">Rookie Low</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group"><input type="text" id="player-note" placeholder="Commentaires / Notes"></div>
+                    <div class="form-group"><button class="btn" style="width:100%" onclick="savePlayer()">Enregistrer</button></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pseudo</th>
+                            <th>Rang de Skill</th>
+                            <th>Note / Remarques</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-tbody">
+                        <tr>
+                            <td colspan="4" style="text-align:center; color:var(--text-muted);">Chargement de la base de données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <aside>
+            <div class="panel reveal">
+                <div class="panel-title">À Propos</div>
+                <p style="color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; margin-bottom: 1.5rem;">
+                    Bienvenue sur la plateforme officielle du clan <strong>PHNTM</strong>. Nous regroupons l'élite des joueurs compétitifs axés sur la performance, la réactivité et la maîtrise stratégique.
+                </p>
+                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.1); padding: 1rem; border-radius: 8px; font-size: 0.85rem;">
+                    <span style="color: var(--neon-violet); font-weight: bold;">Statut des recrutements :</span><br> Sur invitation ou via test de niveau uniquement.
+                </div>
+            </div>
+
+            <div class="panel reveal">
+                <div class="panel-title">Répartition des Rangs</div>
+                <div id="rank-distribution"></div>
+            </div>
+        </aside>
+    </div>
+
+    <footer>© 2026 PHNTM Clan — Database Opérationnelle</footer>
+</div>
+
+<script>
+    let allPlayers = [];
+
+    const RANK_ORDER = ['Phantom', 'Immortal', 'Immortal Mid', 'Immortal Low', 'Diamant', 'Diamant Mid', 'Diamant Low', 'Rookie', 'Rookie Mid', 'Rookie Low'];
+
+    async function loadRoster() {
+        try {
+            const response = await fetch('/api/players');
+            allPlayers = await response.json();
+            updateStatistics(allPlayers);
+            renderTable(allPlayers);
+        } catch (err) {
+            console.error("Erreur de synchronisation :", err);
+        }
+    }
+
+    function getRankBadgeClass(rank) {
+        if (!rank) return 'rank-member';
+        const r = rank.trim().toLowerCase();
+        const map = {
+            'phantom': 'rank-phantom',
+            'immortal': 'rank-immortal',
+            'immortal mid': 'rank-immortal-mid',
+            'immortal low': 'rank-immortal-low',
+            'diamant': 'rank-diamant',
+            'diamant mid': 'rank-diamant-mid',
+            'diamant low': 'rank-diamant-low',
+            'rookie': 'rank-rookie',
+            'rookie mid': 'rank-rookie-mid',
+            'rookie low': 'rank-rookie-low',
+        };
+        if (map[r]) return map[r];
+        if (r.includes('phantom')) return 'rank-phantom';
+        if (r.includes('immortal')) return 'rank-immortal';
+        if (r.includes('diamant')) return 'rank-diamant';
+        if (r.includes('rookie')) return 'rank-rookie';
+        return 'rank-member';
+    }
+
+    function rankIndex(rank) {
+        const idx = RANK_ORDER.findIndex(r => r.toLowerCase() === (rank || '').trim().toLowerCase());
+        return idx === -1 ? RANK_ORDER.length : idx;
+    }
+
+    function sortPlayers(players) {
+        return [...players].sort((a, b) => {
+            const diff = rankIndex(a.rank) - rankIndex(b.rank);
+            if (diff !== 0) return diff;
+            return (a.pseudo || '').localeCompare(b.pseudo || '');
+        });
+    }
+
+    function rankIcon(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return '✦ ';
+        if (cls.startsWith('rank-immortal')) return '◆ ';
+        if (cls.startsWith('rank-diamant')) return '♦ ';
+        if (cls.startsWith('rank-rookie')) return '● ';
+        return '';
+    }
+
+    function renderTable(players) {
+        const tbody = document.getElementById('roster-tbody');
+        if (!players || players.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Aucun membre trouvé</td></tr>`;
+            return;
+        }
+
+        const sorted = sortPlayers(players);
+
+        tbody.innerHTML = sorted.map(p => `
+            <tr>
+                <td data-label="Pseudo" style="font-weight: 700; color: #fff;">${p.pseudo}</td>
+                <td data-label="Rang"><span class="rank-badge ${getRankBadgeClass(p.rank)}">${rankIcon(p.rank)}${p.rank || 'Membre'}</span></td>
+                <td data-label="Note" style="color: var(--text-muted); font-size: 0.9rem;">${p.note || '-'}</td>
+                <td data-label="Actions" style="white-space: nowrap;">
+                    <button class="btn action-btn" onclick="editPlayer('${p.pseudo.replace(/'/g, "\\'")}')">Modifier</button>
+                    <button class="btn action-btn danger" onclick="deletePlayer('${p.pseudo.replace(/'/g, "\\'")}')">Supprimer</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateStatistics(players) {
+        if (!players) return;
+        animateValue('stat-total', players.length);
+        animateValue('stat-phantom', players.filter(p => p.rank && p.rank.toUpperCase().includes('PHANTOM')).length);
+        animateValue('stat-immortal', players.filter(p => p.rank && p.rank.toUpperCase().includes('IMMORTAL')).length);
+        animateValue('stat-diamant', players.filter(p => p.rank && p.rank.toUpperCase().includes('DIAMANT')).length);
+        animateValue('stat-rookie', players.filter(p => p.rank && p.rank.toUpperCase().includes('ROOKIE')).length);
+        renderRankDistribution(players);
+    }
+
+    function renderRankDistribution(players) {
+        const container = document.getElementById('rank-distribution');
+        if (!container) return;
+
+        const total = players.length || 1;
+        const groups = [
+            { label: 'Phantom', color: '#a855f7', match: r => r.toUpperCase().includes('PHANTOM') },
+            { label: 'Immortal', color: '#f43f5e', match: r => r.toUpperCase().includes('IMMORTAL') },
+            { label: 'Diamant', color: '#38bdf8', match: r => r.toUpperCase().includes('DIAMANT') },
+            { label: 'Rookie', color: '#22c55e', match: r => r.toUpperCase().includes('ROOKIE') },
+        ];
+
+        container.innerHTML = groups.map(g => {
+            const count = players.filter(p => p.rank && g.match(p.rank.toUpperCase())).length;
+            const pct = Math.round((count / total) * 100);
+            return `
+                <div class="dist-row">
+                    <div class="dist-label"><span>${g.label}</span><span>${count}</span></div>
+                    <div class="dist-bar-track"><div class="dist-bar-fill" data-pct="${pct}" style="background:${g.color}; color:${g.color}; width:0%;"></div></div>
+                </div>
+            `;
+        }).join('');
+
+        requestAnimationFrame(() => {
+            container.querySelectorAll('.dist-bar-fill').forEach(el => {
+                el.style.width = el.dataset.pct + '%';
+            });
+        });
+    }
+
+    function filterPlayers() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const filtered = allPlayers.filter(p =>
+            (p.pseudo && p.pseudo.toLowerCase().includes(query)) ||
+            (p.rank && p.rank.toLowerCase().includes(query)) ||
+            (p.note && p.note.toLowerCase().includes(query))
+        );
+        renderTable(filtered);
+    }
+
+    function toggleAdminPanel() {
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function savePlayer() {
+        const pseudo = document.getElementById('player-pseudo').value.trim();
+        const rank = document.getElementById('player-rank').value;
+        const note = document.getElementById('player-note').value.trim();
+        const password = document.getElementById('admin-password').value;
+
+        if (!pseudo) return alert("Veuillez saisir un pseudo !");
+
+        try {
+            const response = await fetch('/api/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pseudo, rank, note, password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('player-pseudo').value = '';
+                document.getElementById('player-note').value = '';
+                toggleAdminPanel();
+                loadRoster();
+            } else {
+                alert("Erreur lors de l'enregistrement : " + (result.error || "Clé incorrecte"));
+            }
+        } catch (err) {
+            alert("Erreur lors de l'enregistrement");
+        }
+    }
+
+    function editPlayer(pseudo) {
+        const player = allPlayers.find(p => p.pseudo === pseudo);
+        if (!player) return;
+
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = 'block';
+
+        document.getElementById('player-pseudo').value = player.pseudo;
+        document.getElementById('player-rank').value = player.rank || 'Rookie';
+        document.getElementById('player-note').value = player.note || '';
+
+        document.getElementById('admin-password').focus();
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function deletePlayer(pseudo) {
+        const password = document.getElementById('admin-password').value;
+        if (!password) {
+            alert("Entre la clé d'administration dans le champ prévu avant de supprimer un membre.");
+            return;
+        }
+
+        if (!confirm(`Supprimer définitivement "${pseudo}" du roster ?`)) return;
+
+        try {
+            const response = await fetch(`/api/players/${encodeURIComponent(pseudo)}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                loadRoster();
+            } else {
+                alert("Erreur lors de la suppression : " + (result.error || "Clé incorrecte"));
+            }
+        } catch (err) {
+            alert("Erreur lors de la suppression");
+        }
+    }
+
+    // ============ EFFETS VISUELS ============
+
+    function initParticleBackground() {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'bg-canvas';
+        document.body.prepend(canvas);
+        const ctx = canvas.getContext('2d');
+        let w, h, particles;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const count = Math.min(70, Math.floor((w * h) / 18000));
+        particles = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            r: Math.random() * 1.8 + 0.6
+        }));
+
+        function tick() {
+            ctx.clearRect(0, 0, w, h);
+            for (const p of particles) {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > w) p.vx *= -1;
+                if (p.y < 0 || p.y > h) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(168,85,247,0.55)';
+                ctx.fill();
+            }
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i], b = particles[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = `rgba(168,85,247,${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+        tick();
+    }
+
+    function initCursorGlow() {
+        if (window.matchMedia('(hover: none)').matches) return;
+        const glow = document.createElement('div');
+        glow.id = 'cursor-glow';
+        document.body.appendChild(glow);
+        document.addEventListener('mousemove', e => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+    }
+
+    function initFloatingGhosts() {
+        function spawnGhost() {
+            const ghost = document.createElement('div');
+            ghost.className = 'floating-ghost';
+            ghost.textContent = '👻';
+            ghost.style.left = Math.random() * 100 + 'vw';
+            const duration = 9 + Math.random() * 6;
+            ghost.style.animationDuration = duration + 's';
+            document.body.appendChild(ghost);
+            setTimeout(() => ghost.remove(), duration * 1000 + 500);
+        }
+        spawnGhost();
+        setInterval(spawnGhost, 4500);
+    }
+
+    function initTiltEffect() {
+        document.querySelectorAll('.panel, .stat-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2, cy = rect.height / 2;
+                const rotateX = ((y - cy) / cy) * -3;
+                const rotateY = ((x - cx) / cx) * 3;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    }
+
+    function initRippleEffect() {
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.btn');
+            if (!btn) return;
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 650);
+        });
+    }
+
+    function initScrollReveal() {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    function animateValue(id, end) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const start = parseInt(el.innerText) || 0;
+        if (start === end) { el.innerText = end; return; }
+        const duration = 600;
+        const startTime = performance.now();
+        function step(now) {
+            const progress = Math.min((now - startTime) / duration, 1);
+            el.innerText = Math.round(start + (end - start) * progress);
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    function initVisualEffects() {
+        initParticleBackground();
+        initCursorGlow();
+        initFloatingGhosts();
+        initTiltEffect();
+        initRippleEffect();
+        initScrollReveal();
+    }
+
+    window.onload = () => {
+        loadRoster();
+        initVisualEffects();
+    };
+</script>
+</body>
+</html>

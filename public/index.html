@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHNTM Clan - Gestion & Communauté</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-dark: #08080d;
+        --panel-bg: #121218;
+        --panel-bg-alt: #161620;
+        --neon-violet: #a855f7;
+        --neon-violet-2: #6366f1;
+        --neon-glow: rgba(168, 85, 247, 0.4);
+        --text-main: #f3f4f6;
+        --text-muted: #9ca3af;
+        --border-soft: rgba(255,255,255,0.06);
+        --immortal: #f43f5e;
+        --diamant: #38bdf8;
+        --rookie: #22c55e;
+        --hi-red: #e0263f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        min-height: 100vh;
+        padding: 2.5rem 1rem 1rem;
+        background-image:
+            radial-gradient(circle at 50% -10%, #23113f 0%, transparent 45%),
+            radial-gradient(circle at 100% 100%, #0e1a3a 0%, transparent 40%),
+            var(--bg-dark);
+        background-attachment: fixed;
+    }
+
+    .container { max-width: 1150px; margin: 0 auto; position: relative; z-index: 1; }
+
+    header { text-align: center; margin-bottom: 2.5rem; animation: fadeInDown 0.8s ease; }
+
+    .clan-badge-pill {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--neon-violet);
+        border: 1px solid rgba(168,85,247,0.4);
+        background: rgba(168,85,247,0.08);
+        padding: 0.3rem 0.9rem;
+        border-radius: 999px;
+        margin-bottom: 1rem;
+    }
+
+    .clan-logo-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 3.4rem;
+        font-weight: 700;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+        filter: drop-shadow(0 0 12px var(--neon-violet)) drop-shadow(0 0 26px rgba(168,85,247,0.5));
+    }
+
+    .clan-subtitle { color: var(--text-muted); font-size: 1.05rem; letter-spacing: 1px; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
+        animation: fadeIn 1s ease;
+    }
+
+    .stat-card {
+        background: linear-gradient(160deg, rgba(18,18,24,0.55), rgba(22,22,32,0.45));
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        padding: 1.4rem 1rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+        will-change: transform;
+    }
+
+    .stat-card:hover {
+        border-color: var(--stat-color, var(--neon-violet));
+        box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    }
+
+    .stat-val {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: var(--stat-color, var(--neon-violet));
+        text-shadow: 0 0 12px var(--stat-glow, var(--neon-glow));
+        margin-bottom: 0.15rem;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .main-layout { display: grid; grid-template-columns: 1fr; gap: 1.8rem; }
+
+    @media (min-width: 850px) {
+        .main-layout { grid-template-columns: 2fr 1fr; }
+    }
+
+    .panel {
+        position: relative;
+        background: linear-gradient(160deg, rgba(18,18,24,0.55), rgba(22,22,32,0.45));
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 2rem;
+        box-shadow: 0 10px 34px rgba(0,0,0,0.5);
+        margin-bottom: 1.8rem;
+        transition: transform 0.15s ease, box-shadow 0.25s ease;
+        will-change: transform;
+        animation: panelGlow 7s ease-in-out infinite;
+    }
+
+    @keyframes panelGlow {
+        0%, 100% { box-shadow: 0 10px 34px rgba(0,0,0,0.5); border-color: var(--border-soft); }
+        50% { box-shadow: 0 10px 44px rgba(168,85,247,0.16); border-color: rgba(168,85,247,0.28); }
+    }
+
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    ::selection { background: var(--neon-violet); color: #fff; }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(var(--neon-violet), var(--neon-violet-2));
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(#c084fc, var(--neon-violet-2)); }
+
+    .panel-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--neon-violet);
+        padding-left: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-box input {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        color: #fff;
+        width: 250px;
+        transition: 0.25s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--neon-violet);
+        outline: none;
+        box-shadow: 0 0 12px var(--neon-glow);
+    }
+
+    .rank-filter-select {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+    .rank-filter-select:focus { outline: none; border-color: var(--neon-violet); box-shadow: 0 0 12px var(--neon-glow); }
+    .rank-filter-select option { background: #161622; color: #fff; }
+
+    .admin-trigger-zone { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .btn {
+        position: relative;
+        overflow: hidden;
+        background: rgba(168, 85, 247, 0.1);
+        border: 1px solid var(--neon-violet);
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.55);
+        transform: scale(0);
+        animation: rippleAnim 0.6s ease-out;
+        pointer-events: none;
+    }
+
+    .btn:hover { background: var(--neon-violet); box-shadow: 0 0 15px var(--neon-glow); }
+
+    #admin-panel {
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+        border-radius: 14px;
+        padding: 1.7rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        position: relative;
+        overflow: hidden;
+        animation: panelUnlock 0.5s ease;
+    }
+
+    #admin-panel::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-violet), #facc15, var(--neon-violet), transparent);
+        animation: scanSweep 2.5s linear infinite;
+    }
+
+    @keyframes scanSweep { to { left: 100%; } }
+
+    @keyframes panelUnlock {
+        0% { opacity: 0; transform: scale(0.96) translateY(-8px); filter: blur(6px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+
+    .hud-corner { position: absolute; width: 16px; height: 16px; border: 2px solid var(--neon-violet); opacity: 0.7; }
+    .hud-corner.tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+    .hud-corner.tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+    .hud-corner.bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
+    .hud-corner.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+
+    .admin-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--neon-violet);
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        margin-bottom: 1.1rem;
+    }
+
+    .terminal-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 8px #4ade80;
+        animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .password-field { position: relative; display: inline-flex; align-items: center; }
+    .password-field input {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.5rem 2.2rem 0.5rem 0.7rem;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.85rem;
+        transition: 0.25s;
+    }
+    .password-field input:focus { outline: none; border-color: var(--neon-violet); box-shadow: 0 0 10px var(--neon-glow); }
+
+    .pw-toggle {
+        position: absolute;
+        right: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        opacity: 0.55;
+        color: #fff;
+        transition: 0.2s;
+    }
+    .pw-toggle:hover { opacity: 1; }
+
+    .rank-picker-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin: 0.4rem 0 0.6rem;
+    }
+
+    .rank-picker { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.1rem; }
+
+    .rank-chip {
+        cursor: pointer;
+        border: 1.5px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.04);
+        color: var(--text-muted);
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+    }
+    .rank-chip:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-1px); }
+
+    .rank-chip.active { color: #fff; border-color: transparent; transform: translateY(-2px); }
+    .rank-chip.active.rank-phantom { background: linear-gradient(135deg, #a855f7, #6366f1); box-shadow: 0 0 14px rgba(168,85,247,0.5); }
+    .rank-chip.active.rank-immortal, .rank-chip.active.rank-immortal-mid { background: linear-gradient(135deg, #fb7185, #be123c); box-shadow: 0 0 14px rgba(244,63,94,0.5); }
+    .rank-chip.active.rank-immortal-low { background: rgba(244,63,94,0.22); color: #fda4af; border-color: var(--immortal); }
+    .rank-chip.active.rank-diamant, .rank-chip.active.rank-diamant-mid { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; box-shadow: 0 0 14px rgba(56,189,248,0.5); }
+    .rank-chip.active.rank-diamant-low { background: rgba(56,189,248,0.22); color: #7dd3fc; border-color: var(--diamant); }
+    .rank-chip.active.rank-rookie, .rank-chip.active.rank-rookie-mid { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; box-shadow: 0 0 14px rgba(34,197,94,0.5); }
+    .rank-chip.active.rank-rookie-low { background: rgba(34,197,94,0.22); color: #86efac; border-color: var(--rookie); }
+
+    .badge-preview-row {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1.3rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        min-height: 2rem;
+    }
+
+    .save-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; }
+
+    .btn-spinner {
+        display: none;
+        width: 14px; height: 14px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+    .save-btn.loading .btn-label { opacity: 0.6; }
+    .save-btn.loading .btn-spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .save-btn.success { background: rgba(34,197,94,0.28); border-color: #22c55e; }
+    .save-btn.error-shake { animation: shakeX 0.4s ease; border-color: #ef4444; }
+    @keyframes shakeX {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+    }
+
+    .form-feedback { margin-top: 0.6rem; font-size: 0.8rem; min-height: 1.1rem; }
+    .form-feedback.error { color: #f87171; }
+    .form-feedback.success { color: #4ade80; }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group { position: relative; }
+    .input-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.85rem;
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    .form-group input.has-icon { padding-left: 2.2rem; }
+
+    .form-group input, .form-group select {
+        width: 100%;
+        background: #161622;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem;
+        border-radius: 6px;
+        color: #fff;
+        transition: 0.25s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--neon-violet);
+        box-shadow: 0 0 10px var(--neon-glow);
+    }
+
+    .table-container { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+
+    th {
+        padding: 1rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(255,255,255,0.06);
+    }
+
+    td { padding: 1.1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: 0.2s; }
+
+    tr:hover td { background: rgba(168, 85, 247, 0.04); color: #fff; }
+
+    tr.row-phantom td { background: linear-gradient(90deg, rgba(168,85,247,0.09), transparent 65%); }
+    tr.row-immortal td { background: linear-gradient(90deg, rgba(244,63,94,0.07), transparent 65%); }
+    tr.row-diamant td { background: linear-gradient(90deg, rgba(56,189,248,0.06), transparent 65%); }
+    tr.row-rookie td { background: linear-gradient(90deg, rgba(34,197,94,0.05), transparent 65%); }
+
+    tr.row-phantom:hover td,
+    tr.row-immortal:hover td,
+    tr.row-diamant:hover td,
+    tr.row-rookie:hover td { background: rgba(168, 85, 247, 0.07); }
+
+    tr.top-player td {
+        box-shadow: inset 0 1px 0 rgba(250,204,21,0.4), inset 0 -1px 0 rgba(250,204,21,0.4);
+        background: linear-gradient(90deg, rgba(250,204,21,0.08), transparent 70%);
+    }
+
+    .rank-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 0.32rem 1rem;
+        clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.05;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -3px 4px rgba(0,0,0,0.3);
+        white-space: nowrap;
+    }
+
+    .rank-badge::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 55%);
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        mix-blend-mode: overlay;
+        pointer-events: none;
+    }
+
+    .rank-badge:hover::before { opacity: 1; }
+
+    .rank-main { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .rank-sub {
+        font-size: 0.56rem;
+        font-weight: 700;
+        opacity: 0.75;
+        letter-spacing: 1.5px;
+        margin-top: 1px;
+    }
+
+    .rank-badge::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -75%;
+        width: 50%; height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+        transform: skewX(-20deg);
+    }
+
+    .rank-icon-diamant {
+        display: inline-block;
+        animation: spinDiamond 3s linear infinite;
+    }
+    @keyframes spinDiamond {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+
+    .rank-icon-immortal {
+        display: inline-block;
+        animation: flicker 1.6s ease-in-out infinite;
+    }
+    @keyframes flicker {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(0.92); }
+    }
+
+    tr:hover .rank-badge::after { animation: shimmer 0.9s ease; }
+
+    .rank-phantom {
+        background: linear-gradient(135deg, #a855f7, #6366f1);
+        color: #fff;
+        text-shadow: 0 0 6px rgba(255,255,255,0.6);
+        border: 1.5px solid rgba(250,204,21,0.65);
+        animation: phantomPulse 2.6s ease-in-out infinite;
+    }
+
+    @keyframes phantomPulse {
+        0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 8px rgba(168,85,247,0.4); }
+        50% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 20px rgba(250,204,21,0.55); }
+    }
+
+    /* --- ANNEAU D'ENERGIE ROTATIF (PHANTOM UNIQUEMENT) --- */
+    @property --angle {
+        syntax: '<angle>';
+        inherits: false;
+        initial-value: 0deg;
+    }
+
+    .phantom-frame {
+        position: relative;
+        display: inline-block;
+        padding: 3px;
+        border-radius: 24px;
+    }
+
+    .phantom-frame::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 26px;
+        background: conic-gradient(from var(--angle), #facc15, #a855f7, #6366f1, #facc15);
+        animation: rotateFrame 4s linear infinite;
+        z-index: -1;
+        filter: blur(1.5px);
+        opacity: 0.85;
+    }
+
+    @keyframes rotateFrame { to { --angle: 360deg; } }
+
+    .phantom-crown {
+        margin-left: 0.3rem;
+        font-size: 0.8rem;
+        filter: drop-shadow(0 0 4px #facc15);
+        animation: crownBob 2.4s ease-in-out infinite;
+    }
+
+    @keyframes crownBob {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px); }
+    }
+
+    .phantom-kanji {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px; height: 15px;
+        margin-left: 0.3rem;
+        font-size: 0.58rem;
+        border: 1px solid #facc15;
+        border-radius: 3px;
+        color: #facc15;
+        background: rgba(224,38,63,0.18);
+    }
+
+    .tier-chevrons { font-size: 0.62rem; letter-spacing: 1px; margin-left: 0.5rem; opacity: 0.75; }
+    .tier-chevrons.immortal { color: var(--immortal); }
+    .tier-chevrons.diamant { color: var(--diamant); }
+    .tier-chevrons.rookie { color: var(--rookie); }
+
+    /* --- TYPOGRAPHIE SPECIALE PHANTOM --- */
+    .rank-phantom .rank-main {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 0.88rem;
+        letter-spacing: 2.5px;
+        font-weight: 700;
+    }
+
+    /* --- PARTICULES SPECIFIQUES PAR RANG --- */
+    .rank-fx { position: relative; display: inline-block; vertical-align: middle; }
+
+    .badge-particles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: visible;
+    }
+
+    .particle {
+        position: absolute;
+        bottom: 20%;
+        border-radius: 50%;
+        opacity: 0;
+    }
+
+    .particle.p1 { left: 12%; animation-delay: 0s; }
+    .particle.p2 { left: 48%; animation-delay: 0.8s; }
+    .particle.p3 { left: 80%; animation-delay: 1.5s; }
+
+    .fx-phantom .particle {
+        width: 4px; height: 4px;
+        background: #c084fc;
+        box-shadow: 0 0 6px #c084fc, 0 0 2px #fff;
+        animation: riseSmoke 3.2s ease-in infinite;
+    }
+
+    .fx-immortal .particle, .fx-immortal-mid .particle, .fx-immortal-low .particle {
+        width: 3px; height: 3px;
+        background: #fb7185;
+        box-shadow: 0 0 6px #fb7185;
+        animation: sparkRise 1.5s ease-out infinite;
+    }
+
+    .fx-diamant .particle, .fx-diamant-mid .particle, .fx-diamant-low .particle {
+        width: 3px; height: 3px;
+        background: #7dd3fc;
+        box-shadow: 0 0 7px #7dd3fc;
+        animation: crystalGlint 2.4s ease-in-out infinite;
+    }
+
+    @keyframes riseSmoke {
+        0% { opacity: 0; transform: translateY(0) scale(0.6); }
+        30% { opacity: 0.75; }
+        100% { opacity: 0; transform: translateY(-24px) scale(1.4); }
+    }
+
+    @keyframes sparkRise {
+        0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.5); }
+        20% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-16px) translateX(4px) scale(0.3); }
+    }
+
+    @keyframes crystalGlint {
+        0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+        50% { opacity: 0.95; transform: scale(1.15) rotate(180deg); }
+    }
+
+    /* --- ENTREE POP DES BADGES --- */
+    .badge-pop {
+        animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes badgePop {
+        0% { transform: scale(0.35); opacity: 0; }
+        65% { transform: scale(1.12); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* --- GLITCH PHANTOM --- */
+    .rank-phantom.glitching .rank-main {
+        animation: glitchText 0.35s steps(2, end);
+    }
+
+    @keyframes glitchText {
+        0%, 100% { text-shadow: 0 0 6px rgba(255,255,255,0.6); transform: translate(0, 0); }
+        20% { text-shadow: -2px 0 #ff2d6a, 2px 0 #22d3ee; transform: translate(-1px, 0); }
+        40% { text-shadow: 2px 0 #ff2d6a, -2px 0 #22d3ee; transform: translate(1px, 0); }
+        60% { text-shadow: -1px 0 #ff2d6a, 1px 0 #22d3ee; transform: translate(0, -1px); }
+        80% { text-shadow: 0 0 6px rgba(255,255,255,0.6); transform: translate(0, 0); }
+    }
+
+    /* --- BRAISE IMMORTAL --- */
+    .fx-immortal::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        background: radial-gradient(circle, rgba(244,63,94,0.4), transparent 70%);
+        filter: blur(5px);
+        z-index: -1;
+        animation: emberPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes emberPulse {
+        0%, 100% { opacity: 0.35; transform: scale(0.9); }
+        50% { opacity: 0.85; transform: scale(1.2); }
+    }
+
+    /* --- ETINCELLE SUPPLEMENTAIRE DIAMANT --- */
+    .fx-diamant::after {
+        content: '✦';
+        position: absolute;
+        top: -9px; right: -7px;
+        font-size: 0.6rem;
+        color: #7dd3fc;
+        text-shadow: 0 0 6px #7dd3fc;
+        animation: sparkleTwinkle 1.7s ease-in-out infinite;
+    }
+
+    @keyframes sparkleTwinkle {
+        0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+        50% { opacity: 1; transform: scale(1.25) rotate(90deg); }
+    }
+
+    /* --- REBOND ROOKIE --- */
+    .tier-chevrons.rookie {
+        display: inline-block;
+        animation: chevronBounce 1.6s ease-in-out infinite;
+    }
+
+    @keyframes chevronBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+
+    .rank-immortal { background: linear-gradient(135deg, #fb7185, #be123c); color: #fff; border: 2px solid rgba(244,63,94,0.5); }
+    .rank-immortal-mid { background: linear-gradient(135deg, #fda4af, #e11d48); color: #fff; opacity: 0.92; border: 1.5px solid rgba(244,63,94,0.35); }
+    .rank-immortal-low { background: rgba(244,63,94,0.12); border: 1px solid var(--immortal); color: #fda4af; box-shadow: none; }
+
+    .rank-diamant { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; border: 2px solid rgba(56,189,248,0.5); }
+    .rank-diamant-mid { background: linear-gradient(135deg, #bae6fd, #818cf8); color: #0b1120; opacity: 0.92; border: 1.5px solid rgba(56,189,248,0.35); }
+    .rank-diamant-low { background: rgba(56,189,248,0.12); border: 1px solid var(--diamant); color: #7dd3fc; box-shadow: none; }
+
+    .rank-rookie { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; border: 1.5px solid rgba(34,197,94,0.4); }
+    .rank-rookie-mid { background: linear-gradient(135deg, #86efac, #22c55e); color: #06210f; opacity: 0.92; border: 1px solid rgba(34,197,94,0.3); }
+    .rank-rookie-low { background: rgba(34,197,94,0.12); border: 1px solid var(--rookie); color: #86efac; box-shadow: none; }
+
+    .rank-member { background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
+
+    .action-btn { padding: 0.35rem 0.7rem; font-size: 0.78rem; border-radius: 6px; }
+    .action-btn.danger { border-color: #ef4444; color: #ef4444; }
+    .action-btn.danger:hover { background: #ef4444; color: #fff; box-shadow: 0 0 12px rgba(239,68,68,0.4); }
+
+    .dist-row { margin-bottom: 1.1rem; }
+    .dist-row:last-child { margin-bottom: 0; }
+
+    .dist-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        margin-bottom: 0.4rem;
+        color: var(--text-muted);
+    }
+
+    .dist-label span:first-child { color: var(--text-main); font-weight: 600; }
+
+    .dist-bar-track {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        height: 10px;
+        overflow: hidden;
+    }
+
+    .dist-bar-fill {
+        height: 100%;
+        border-radius: 20px;
+        transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 0 10px currentColor;
+    }
+
+    footer {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        padding: 2rem 0 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 640px) {
+        .clan-logo-title { font-size: 2.3rem; letter-spacing: 3px; }
+        .panel { padding: 1.3rem; }
+        thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tr {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 0.8rem;
+        }
+        td {
+            border: none;
+            padding: 0.4rem 0.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        td::before {
+            content: attr(data-label);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    #bg-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -2;
+        pointer-events: none;
+    }
+
+    #cursor-glow {
+        position: fixed;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(168,85,247,0.22), transparent 70%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 0;
+        mix-blend-mode: screen;
+        transition: opacity 0.3s;
+    }
+
+    @media (hover: none) {
+        #cursor-glow { display: none; }
+    }
+
+    .floating-ghost {
+        position: fixed;
+        bottom: -60px;
+        font-size: 1.4rem;
+        opacity: 0;
+        z-index: -1;
+        pointer-events: none;
+        filter: drop-shadow(0 0 6px var(--neon-violet));
+        animation: floatUp linear forwards;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 3px);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    @keyframes titleGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes titleFlicker {
+        0%, 91%, 100% { opacity: 1; }
+        92% { opacity: 0.65; }
+        93% { opacity: 1; }
+        94.5% { opacity: 0.45; }
+        95.5% { opacity: 1; }
+    }
+
+    @keyframes rippleAnim {
+        to { transform: scale(2.6); opacity: 0; }
+    }
+
+    @keyframes shimmer {
+        100% { left: 125%; }
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.4; }
+        90% { opacity: 0.4; }
+        100% { transform: translateY(-115vh) rotate(15deg); opacity: 0; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* --- ACCENTS JAPONAIS --- */
+    .hanko-stamp {
+        position: absolute;
+        top: -6px;
+        right: -18px;
+        width: 58px;
+        height: 58px;
+        border: 2.5px solid var(--hi-red);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--hi-red);
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        transform: rotate(-8deg);
+        opacity: 0.85;
+        box-shadow: 0 0 14px rgba(224,38,63,0.35);
+        writing-mode: vertical-rl;
+        background: rgba(224,38,63,0.05);
+        animation: hankoPulse 5s ease-in-out infinite;
+    }
+
+    @keyframes hankoPulse {
+        0%, 100% { box-shadow: 0 0 14px rgba(224,38,63,0.35); }
+        50% { box-shadow: 0 0 22px rgba(224,38,63,0.6); }
+    }
+
+    .header-wrapper { position: relative; display: inline-block; }
+
+    .jp-subtitle-kana {
+        font-size: 0.85rem;
+        letter-spacing: 4px;
+        color: var(--hi-red);
+        opacity: 0.75;
+        margin-top: 0.3rem;
+        text-shadow: 0 0 8px rgba(224,38,63,0.5);
+    }
+
+    .vertical-jp-strip {
+        position: fixed;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        writing-mode: vertical-rl;
+        font-size: 0.85rem;
+        letter-spacing: 6px;
+        color: rgba(255,255,255,0.12);
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+        display: none;
+    }
+
+    @media (min-width: 1050px) {
+        .vertical-jp-strip { display: block; }
+    }
+
+    .panel-title-kanji {
+        font-size: 0.68rem;
+        color: var(--hi-red);
+        opacity: 0.6;
+        letter-spacing: 3px;
+        margin-left: 0.6rem;
+        font-weight: 500;
+        text-transform: none;
+    }
+
+    .brush-divider {
+        width: 100%;
+        height: 14px;
+        margin: 0 0 1.6rem;
+        opacity: 0.55;
+    }
+
+    .seigaiha-strip {
+        position: relative;
+        height: 22px;
+        margin-top: 1.6rem;
+        opacity: 0.35;
+        background-image: radial-gradient(circle at 10px -6px, transparent 12px, rgba(168,85,247,0.35) 13px, rgba(168,85,247,0.35) 14px, transparent 15px);
+        background-size: 24px 24px;
+        background-repeat: repeat-x;
+    }
+
+    .mini-hanko {
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        width: 26px;
+        height: 26px;
+        border: 1.5px solid var(--hi-red);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--hi-red);
+        font-size: 0.68rem;
+        opacity: 0.55;
+        transform: rotate(-6deg);
+    }
+
+    .katakana-fall {
+        position: fixed;
+        top: -30px;
+        font-size: 1rem;
+        color: rgba(168,85,247,0.35);
+        z-index: -1;
+        pointer-events: none;
+        user-select: none;
+        text-shadow: 0 0 6px rgba(168,85,247,0.4);
+        animation: kanaFall linear forwards;
+    }
+
+    @keyframes kanaFall {
+        0% { transform: translateY(0); opacity: 0; }
+        8% { opacity: 0.6; }
+        92% { opacity: 0.6; }
+        100% { transform: translateY(110vh); opacity: 0; }
+    }
+
+    /* --- KANJI GEANTS EN ARRIERE-PLAN --- */
+    .giant-kanji {
+        position: fixed;
+        font-size: 6rem;
+        font-weight: 700;
+        color: rgba(224,38,63,0.09);
+        z-index: -1;
+        pointer-events: none;
+        user-select: none;
+        filter: blur(2px);
+        text-shadow: 0 0 45px rgba(168,85,247,0.35);
+        animation: kanjiInkBleed linear forwards;
+    }
+
+    @keyframes kanjiInkBleed {
+        0% { opacity: 0; transform: scale(0.6) rotate(var(--rot, 0deg)); filter: blur(10px); }
+        15% { opacity: 1; filter: blur(1px); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: scale(1.15) rotate(var(--rot, 0deg)); filter: blur(4px); }
+    }
+
+    /* --- TRAITS DE PINCEAU ANIMES --- */
+    .brush-stroke-anim {
+        position: fixed;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+        animation: brushAppear 4.2s ease-out forwards;
+    }
+
+    @keyframes brushAppear {
+        0% { opacity: 0; }
+        10% { opacity: 0.55; }
+        70% { opacity: 0.55; }
+        100% { opacity: 0; }
+    }
+
+    /* --- GRAIN CINEMA --- */
+    .grain-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* --- ECLAIR --- */
+    .lightning-flash {
+        position: fixed;
+        inset: 0;
+        background: rgba(168,85,247,0.06);
+        z-index: 40;
+        pointer-events: none;
+        opacity: 0;
+        animation: flashPulse 0.4s ease-out;
+    }
+
+    @keyframes flashPulse {
+        0% { opacity: 0; }
+        15% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* --- HALO PULSANT DERRIERE LE LOGO --- */
+    .logo-halo {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 340px; height: 180px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(ellipse, rgba(168,85,247,0.35), transparent 70%);
+        z-index: -1;
+        animation: haloPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes haloPulse {
+        0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.15); }
+    }
+
+    /* --- TITRE MAGNETIQUE --- */
+    .clan-logo-title .letter {
+        display: inline-block;
+        transition: transform 0.15s ease-out;
+        background: linear-gradient(90deg, #fff, var(--neon-violet), #6366f1, #fff);
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: titleGradient 6s ease infinite, titleFlicker 9s infinite;
+    }
+
+    /* --- TYPEWRITER CURSOR --- */
+    .typewriter-cursor {
+        display: inline-block;
+        width: 2px;
+        background: var(--text-muted);
+        margin-left: 2px;
+        animation: blinkCursor 0.9s step-end infinite;
+    }
+
+    @keyframes blinkCursor {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    /* --- CONFETTIS --- */
+    .confetti-piece {
+        position: fixed;
+        top: -20px;
+        width: 8px;
+        height: 8px;
+        z-index: 60;
+        pointer-events: none;
+        animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+<div class="grain-overlay"></div>
+
+<div class="container">
+    <div class="vertical-jp-strip">幻影 PHANTOM CLAN 幻影</div>
+
+    <header>
+        <div class="clan-badge-pill">Roster Officiel</div>
+        <div class="header-wrapper">
+            <div class="logo-halo"></div>
+            <div class="clan-logo-title" id="clan-title">PHNTM</div>
+            <div class="hanko-stamp">幻影</div>
+        </div>
+        <div class="clan-subtitle" id="clan-subtitle"></div>
+        <div class="jp-subtitle-kana">ファントム・クラン</div>
+    </header>
+
+    <svg class="brush-divider" viewBox="0 0 400 14" preserveAspectRatio="none">
+        <path d="M2,7 C60,2 140,12 200,6 C260,1 340,11 398,5" stroke="url(#brushGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <defs>
+            <linearGradient id="brushGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="transparent"/>
+                <stop offset="15%" stop-color="#e0263f"/>
+                <stop offset="50%" stop-color="#a855f7"/>
+                <stop offset="85%" stop-color="#e0263f"/>
+                <stop offset="100%" stop-color="transparent"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label">Membres Actifs</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#a855f7; --stat-glow:rgba(168,85,247,0.4);">
+            <div class="stat-val" id="stat-phantom">0</div>
+            <div class="stat-label">Phantom</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#f43f5e; --stat-glow:rgba(244,63,94,0.4);">
+            <div class="stat-val" id="stat-immortal">0</div>
+            <div class="stat-label">Immortal</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#38bdf8; --stat-glow:rgba(56,189,248,0.4);">
+            <div class="stat-val" id="stat-diamant">0</div>
+            <div class="stat-label">Diamant</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#22c55e; --stat-glow:rgba(34,197,94,0.4);">
+            <div class="stat-val" id="stat-rookie">0</div>
+            <div class="stat-label">Rookie</div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <main class="panel reveal">
+            <div class="panel-title">Roster du Clan<span class="panel-title-kanji">名簿</span></div>
+            <div class="mini-hanko">組</div>
+
+            <div class="controls-bar">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Rechercher un membre..." oninput="filterPlayers()">
+                </div>
+                <select id="rank-filter" class="rank-filter-select" onchange="filterPlayers()">
+                    <option value="all">Tous les rangs</option>
+                    <option value="phantom">Phantom</option>
+                    <option value="immortal">Immortal (tous)</option>
+                    <option value="diamant">Diamant (tous)</option>
+                    <option value="rookie">Rookie (tous)</option>
+                </select>
+                <div class="admin-trigger-zone">
+                    <div class="password-field">
+                        <input type="password" id="admin-password" placeholder="Clé d'administration">
+                        <button type="button" class="pw-toggle" onclick="togglePasswordVisibility()" aria-label="Afficher/masquer le mot de passe">👁</button>
+                    </div>
+                    <button class="btn" onclick="toggleAdminPanel()">Mode Édition</button>
+                </div>
+            </div>
+
+            <div id="admin-panel">
+                <div class="hud-corner tl"></div>
+                <div class="hud-corner tr"></div>
+                <div class="hud-corner bl"></div>
+                <div class="hud-corner br"></div>
+
+                <h4 class="admin-panel-title"><span class="terminal-dot"></span>Ajouter / Modifier un Joueur</h4>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="input-icon">🎮</span>
+                        <input type="text" id="player-pseudo" class="has-icon" placeholder="Pseudo exact">
+                    </div>
+                    <div class="form-group">
+                        <span class="input-icon">📝</span>
+                        <input type="text" id="player-note" class="has-icon" placeholder="Commentaires / Notes">
+                    </div>
+                </div>
+
+                <div class="rank-picker-label">Rang de skill</div>
+                <div class="rank-picker" id="rank-picker"></div>
+
+                <div class="badge-preview-row">
+                    <span>Aperçu :</span>
+                    <span id="badge-preview"></span>
+                </div>
+
+                <button class="btn save-btn" id="save-btn" onclick="savePlayer()">
+                    <span class="btn-label">Enregistrer</span>
+                    <span class="btn-spinner"></span>
+                </button>
+                <div class="form-feedback" id="form-feedback"></div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pseudo</th>
+                            <th>Rang de Skill</th>
+                            <th>Note / Remarques</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-tbody">
+                        <tr>
+                            <td colspan="4" style="text-align:center; color:var(--text-muted);">Chargement de la base de données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <aside>
+            <div class="panel reveal">
+                <div class="panel-title">À Propos<span class="panel-title-kanji">概要</span></div>
+                <p style="color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; margin-bottom: 1.5rem;">
+                    Bienvenue sur la plateforme officielle du clan <strong>PHNTM</strong>. Nous regroupons l'élite des joueurs compétitifs axés sur la performance, la réactivité et la maîtrise stratégique.
+                </p>
+                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.1); padding: 1rem; border-radius: 8px; font-size: 0.85rem;">
+                    <span style="color: var(--neon-violet); font-weight: bold;">Statut des recrutements :</span><br> Sur invitation ou via test de niveau uniquement.
+                </div>
+            </div>
+
+            <div class="panel reveal">
+                <div class="panel-title">Répartition des Rangs<span class="panel-title-kanji">階級</span></div>
+                <div id="rank-distribution"></div>
+                <div class="seigaiha-strip"></div>
+            </div>
+        </aside>
+    </div>
+
+    <footer>© 2026 PHNTM Clan — Database Opérationnelle</footer>
+</div>
+
+<script>
+    let allPlayers = [];
+    let selectedRank = 'Rookie';
+
+    const RANK_ORDER = ['Phantom', 'Immortal', 'Immortal Mid', 'Immortal Low', 'Diamant', 'Diamant Mid', 'Diamant Low', 'Rookie', 'Rookie Mid', 'Rookie Low'];
+
+    async function loadRoster() {
+        try {
+            const response = await fetch('/api/players');
+            allPlayers = await response.json();
+            updateStatistics(allPlayers);
+            renderTable(allPlayers);
+        } catch (err) {
+            console.error("Erreur de synchronisation :", err);
+        }
+    }
+
+    function getRankBadgeClass(rank) {
+        if (!rank) return 'rank-member';
+        const r = rank.trim().toLowerCase();
+        const map = {
+            'phantom': 'rank-phantom',
+            'immortal': 'rank-immortal',
+            'immortal mid': 'rank-immortal-mid',
+            'immortal low': 'rank-immortal-low',
+            'diamant': 'rank-diamant',
+            'diamant mid': 'rank-diamant-mid',
+            'diamant low': 'rank-diamant-low',
+            'rookie': 'rank-rookie',
+            'rookie mid': 'rank-rookie-mid',
+            'rookie low': 'rank-rookie-low',
+        };
+        if (map[r]) return map[r];
+        if (r.includes('phantom')) return 'rank-phantom';
+        if (r.includes('immortal')) return 'rank-immortal';
+        if (r.includes('diamant')) return 'rank-diamant';
+        if (r.includes('rookie')) return 'rank-rookie';
+        return 'rank-member';
+    }
+
+    function rankIndex(rank) {
+        const idx = RANK_ORDER.findIndex(r => r.toLowerCase() === (rank || '').trim().toLowerCase());
+        return idx === -1 ? RANK_ORDER.length : idx;
+    }
+
+    function sortPlayers(players) {
+        return [...players].sort((a, b) => {
+            const diff = rankIndex(a.rank) - rankIndex(b.rank);
+            if (diff !== 0) return diff;
+            return (a.pseudo || '').localeCompare(b.pseudo || '');
+        });
+    }
+
+    function rankIcon(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return '✦ ';
+        if (cls.startsWith('rank-immortal')) return '<span class="rank-icon-immortal">◆</span> ';
+        if (cls.startsWith('rank-diamant')) return '<span class="rank-icon-diamant">♦</span> ';
+        if (cls.startsWith('rank-rookie')) return '● ';
+        return '';
+    }
+
+    function splitRankLabel(rank) {
+        if (!rank) return ['MEMBRE', null];
+        const r = rank.trim();
+        const m = r.match(/^(.*)\s+(Mid|Low)$/i);
+        if (m) return [m[1].toUpperCase(), m[2].toUpperCase()];
+        return [r.toUpperCase(), null];
+    }
+
+    function tierIndicator(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return '<span class="phantom-crown">👑</span><span class="phantom-kanji">王</span>';
+        if (cls.startsWith('rank-immortal')) return '<span class="tier-chevrons immortal">▲▲▲</span>';
+        if (cls.startsWith('rank-diamant')) return '<span class="tier-chevrons diamant">▲▲</span>';
+        if (cls.startsWith('rank-rookie')) return '<span class="tier-chevrons rookie">▲</span>';
+        return '';
+    }
+
+    function rowClassFor(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return 'row-phantom';
+        if (cls.startsWith('rank-immortal')) return 'row-immortal';
+        if (cls.startsWith('rank-diamant')) return 'row-diamant';
+        if (cls.startsWith('rank-rookie')) return 'row-rookie';
+        return '';
+    }
+
+    function particleFxFor(cls) {
+        if (cls.startsWith('rank-phantom')) return 'fx-phantom';
+        if (cls.startsWith('rank-immortal')) return 'fx-immortal';
+        if (cls.startsWith('rank-diamant')) return 'fx-diamant';
+        return null;
+    }
+
+    function buildBadgeHTML(rank, idx) {
+        const cls = getRankBadgeClass(rank);
+        const [main, sub] = splitRankLabel(rank);
+        const badge = `
+            <span class="rank-badge ${cls}">
+                <span class="rank-main">${rankIcon(rank)}${main}</span>
+                ${sub ? `<span class="rank-sub">${sub}</span>` : ''}
+            </span>
+        `;
+
+        const fxClass = particleFxFor(cls);
+        const particles = fxClass ? `
+            <span class="badge-particles">
+                <span class="particle p1"></span>
+                <span class="particle p2"></span>
+                <span class="particle p3"></span>
+            </span>
+        ` : '';
+
+        const delay = `animation-delay: ${(idx || 0) * 45}ms`;
+
+        let wrapped;
+        if (cls.startsWith('rank-phantom')) {
+            wrapped = `<span class="rank-fx ${fxClass} badge-pop" style="${delay}"><span class="phantom-frame">${badge}</span>${particles}</span>`;
+        } else if (fxClass) {
+            wrapped = `<span class="rank-fx ${fxClass} badge-pop" style="${delay}">${badge}${particles}</span>`;
+        } else {
+            wrapped = `<span class="badge-pop" style="display:inline-block; ${delay}">${badge}</span>`;
+        }
+
+        return `${wrapped}${tierIndicator(rank)}`;
+    }
+
+    function renderTable(players) {
+        const tbody = document.getElementById('roster-tbody');
+        if (!players || players.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Aucun membre trouvé</td></tr>`;
+            return;
+        }
+
+        const sorted = sortPlayers(players);
+
+        tbody.innerHTML = sorted.map((p, idx) => `
+            <tr class="${rowClassFor(p.rank)} ${idx === 0 ? 'top-player' : ''}">
+                <td data-label="Pseudo" style="font-weight: 700; color: #fff;">${p.pseudo}</td>
+                <td data-label="Rang">${buildBadgeHTML(p.rank, idx)}</td>
+                <td data-label="Note" style="color: var(--text-muted); font-size: 0.9rem;">${p.note || '-'}</td>
+                <td data-label="Actions" style="white-space: nowrap;">
+                    <button class="btn action-btn" onclick="editPlayer('${p.pseudo.replace(/'/g, "\\'")}')">Modifier</button>
+                    <button class="btn action-btn danger" onclick="deletePlayer('${p.pseudo.replace(/'/g, "\\'")}')">Supprimer</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateStatistics(players) {
+        if (!players) return;
+        animateValue('stat-total', players.length);
+        animateValue('stat-phantom', players.filter(p => p.rank && p.rank.toUpperCase().includes('PHANTOM')).length);
+        animateValue('stat-immortal', players.filter(p => p.rank && p.rank.toUpperCase().includes('IMMORTAL')).length);
+        animateValue('stat-diamant', players.filter(p => p.rank && p.rank.toUpperCase().includes('DIAMANT')).length);
+        animateValue('stat-rookie', players.filter(p => p.rank && p.rank.toUpperCase().includes('ROOKIE')).length);
+        renderRankDistribution(players);
+    }
+
+    function renderRankDistribution(players) {
+        const container = document.getElementById('rank-distribution');
+        if (!container) return;
+
+        const total = players.length || 1;
+        const groups = [
+            { label: 'Phantom', color: '#a855f7', match: r => r.toUpperCase().includes('PHANTOM') },
+            { label: 'Immortal', color: '#f43f5e', match: r => r.toUpperCase().includes('IMMORTAL') },
+            { label: 'Diamant', color: '#38bdf8', match: r => r.toUpperCase().includes('DIAMANT') },
+            { label: 'Rookie', color: '#22c55e', match: r => r.toUpperCase().includes('ROOKIE') },
+        ];
+
+        container.innerHTML = groups.map(g => {
+            const count = players.filter(p => p.rank && g.match(p.rank.toUpperCase())).length;
+            const pct = Math.round((count / total) * 100);
+            return `
+                <div class="dist-row">
+                    <div class="dist-label"><span>${g.label}</span><span>${count}</span></div>
+                    <div class="dist-bar-track"><div class="dist-bar-fill" data-pct="${pct}" style="background:${g.color}; color:${g.color}; width:0%;"></div></div>
+                </div>
+            `;
+        }).join('');
+
+        requestAnimationFrame(() => {
+            container.querySelectorAll('.dist-bar-fill').forEach(el => {
+                el.style.width = el.dataset.pct + '%';
+            });
+        });
+    }
+
+    function filterPlayers() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const rankFilter = document.getElementById('rank-filter').value;
+
+        const filtered = allPlayers.filter(p => {
+            const matchesQuery = (p.pseudo && p.pseudo.toLowerCase().includes(query)) ||
+                (p.rank && p.rank.toLowerCase().includes(query)) ||
+                (p.note && p.note.toLowerCase().includes(query));
+
+            if (!matchesQuery) return false;
+            if (rankFilter === 'all') return true;
+
+            const cls = getRankBadgeClass(p.rank);
+            return cls.includes(rankFilter);
+        });
+        renderTable(filtered);
+    }
+
+    function initRankPicker() {
+        const picker = document.getElementById('rank-picker');
+        if (!picker) return;
+        picker.innerHTML = RANK_ORDER.map(r => `
+            <button type="button" class="rank-chip ${getRankBadgeClass(r)}" data-rank="${r}" onclick="selectRank('${r}')">${r}</button>
+        `).join('');
+        selectRank(selectedRank);
+    }
+
+    function selectRank(rank) {
+        selectedRank = rank;
+        document.querySelectorAll('.rank-chip').forEach(chip => {
+            chip.classList.toggle('active', chip.dataset.rank === rank);
+        });
+        const preview = document.getElementById('badge-preview');
+        if (preview) preview.innerHTML = buildBadgeHTML(rank, 0);
+    }
+
+    function togglePasswordVisibility() {
+        const input = document.getElementById('admin-password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function toggleAdminPanel() {
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function savePlayer() {
+        const pseudo = document.getElementById('player-pseudo').value.trim();
+        const rank = selectedRank;
+        const note = document.getElementById('player-note').value.trim();
+        const password = document.getElementById('admin-password').value;
+        const btn = document.getElementById('save-btn');
+        const feedback = document.getElementById('form-feedback');
+
+        feedback.textContent = '';
+        feedback.className = 'form-feedback';
+
+        if (!pseudo) {
+            feedback.textContent = 'Veuillez saisir un pseudo !';
+            feedback.classList.add('error');
+            return;
+        }
+
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pseudo, rank, note, password })
+            });
+
+            const result = await response.json();
+            btn.classList.remove('loading');
+
+            if (result.success) {
+                btn.classList.add('success');
+                feedback.textContent = 'Enregistré avec succès !';
+                feedback.classList.add('success');
+                spawnConfetti();
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    document.getElementById('player-pseudo').value = '';
+                    document.getElementById('player-note').value = '';
+                    toggleAdminPanel();
+                    loadRoster();
+                    feedback.textContent = '';
+                }, 700);
+            } else {
+                btn.classList.add('error-shake');
+                feedback.textContent = result.error || 'Clé incorrecte';
+                feedback.classList.add('error');
+                setTimeout(() => btn.classList.remove('error-shake'), 450);
+            }
+        } catch (err) {
+            btn.classList.add('error-shake');
+            feedback.textContent = "Erreur lors de l'enregistrement";
+            feedback.classList.add('error');
+            setTimeout(() => btn.classList.remove('error-shake'), 450);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function editPlayer(pseudo) {
+        const player = allPlayers.find(p => p.pseudo === pseudo);
+        if (!player) return;
+
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = 'block';
+
+        document.getElementById('player-pseudo').value = player.pseudo;
+        selectRank(player.rank || 'Rookie');
+        document.getElementById('player-note').value = player.note || '';
+
+        document.getElementById('admin-password').focus();
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function deletePlayer(pseudo) {
+        const password = document.getElementById('admin-password').value;
+        if (!password) {
+            alert("Entre la clé d'administration dans le champ prévu avant de supprimer un membre.");
+            return;
+        }
+
+        if (!confirm(`Supprimer définitivement "${pseudo}" du roster ?`)) return;
+
+        try {
+            const response = await fetch(`/api/players/${encodeURIComponent(pseudo)}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                loadRoster();
+            } else {
+                alert("Erreur lors de la suppression : " + (result.error || "Clé incorrecte"));
+            }
+        } catch (err) {
+            alert("Erreur lors de la suppression");
+        }
+    }
+
+    // ============ EFFETS VISUELS ============
+
+    function initParticleBackground() {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'bg-canvas';
+        document.body.prepend(canvas);
+        const ctx = canvas.getContext('2d');
+        let w, h, particles;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const count = Math.min(70, Math.floor((w * h) / 18000));
+        particles = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            r: Math.random() * 1.8 + 0.6
+        }));
+
+        function tick() {
+            ctx.clearRect(0, 0, w, h);
+            for (const p of particles) {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > w) p.vx *= -1;
+                if (p.y < 0 || p.y > h) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(168,85,247,0.55)';
+                ctx.fill();
+            }
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i], b = particles[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = `rgba(168,85,247,${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+        tick();
+    }
+
+    function initCursorGlow() {
+        if (window.matchMedia('(hover: none)').matches) return;
+        const glow = document.createElement('div');
+        glow.id = 'cursor-glow';
+        document.body.appendChild(glow);
+        document.addEventListener('mousemove', e => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+    }
+
+    function initFloatingGhosts() {
+        function spawnGhost() {
+            const ghost = document.createElement('div');
+            ghost.className = 'floating-ghost';
+            ghost.textContent = '👻';
+            ghost.style.left = Math.random() * 100 + 'vw';
+            const duration = 9 + Math.random() * 6;
+            ghost.style.animationDuration = duration + 's';
+            document.body.appendChild(ghost);
+            setTimeout(() => ghost.remove(), duration * 1000 + 500);
+        }
+        spawnGhost();
+        setInterval(spawnGhost, 4500);
+    }
+
+    function initTiltEffect() {
+        document.querySelectorAll('.panel, .stat-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2, cy = rect.height / 2;
+                const rotateX = ((y - cy) / cy) * -3;
+                const rotateY = ((x - cx) / cx) * 3;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    }
+
+    function initRippleEffect() {
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.btn');
+            if (!btn) return;
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 650);
+        });
+    }
+
+    function initScrollReveal() {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    function animateValue(id, end) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const start = parseInt(el.innerText) || 0;
+        if (start === end) { el.innerText = end; return; }
+        const duration = 600;
+        const startTime = performance.now();
+        function step(now) {
+            const progress = Math.min((now - startTime) / duration, 1);
+            el.innerText = Math.round(start + (end - start) * progress);
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    function initTypewriter() {
+        const el = document.getElementById('clan-subtitle');
+        if (!el) return;
+        const text = "Database Opérationnelle & Roster Officiel";
+        el.textContent = '';
+        const cursor = document.createElement('span');
+        cursor.className = 'typewriter-cursor';
+        let i = 0;
+        function type() {
+            if (i <= text.length) {
+                el.textContent = text.slice(0, i);
+                el.appendChild(cursor);
+                i++;
+                setTimeout(type, 35);
+            }
+        }
+        type();
+    }
+
+    function initMagneticTitle() {
+        const title = document.getElementById('clan-title');
+        if (!title) return;
+        const text = title.textContent;
+        title.innerHTML = text.split('').map(ch => `<span class="letter">${ch}</span>`).join('');
+        const letters = title.querySelectorAll('.letter');
+
+        document.addEventListener('mousemove', e => {
+            letters.forEach(letter => {
+                const rect = letter.getBoundingClientRect();
+                const lx = rect.left + rect.width / 2;
+                const ly = rect.top + rect.height / 2;
+                const dx = e.clientX - lx;
+                const dy = e.clientY - ly;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const radius = 110;
+                if (dist < radius) {
+                    const force = (1 - dist / radius) * 10;
+                    const angle = Math.atan2(dy, dx);
+                    letter.style.transform = `translate(${-Math.cos(angle) * force}px, ${-Math.sin(angle) * force}px)`;
+                } else {
+                    letter.style.transform = '';
+                }
+            });
+        });
+    }
+
+    function initKatakanaRain() {
+        const chars = 'ファントムクランロスタァィゥェォッャュョ';
+        function spawnKana() {
+            const el = document.createElement('div');
+            el.className = 'katakana-fall';
+            el.textContent = chars[Math.floor(Math.random() * chars.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            const duration = 6 + Math.random() * 5;
+            el.style.animationDuration = duration + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000 + 300);
+        }
+        setInterval(spawnKana, 900);
+        for (let i = 0; i < 6; i++) setTimeout(spawnKana, i * 400);
+    }
+
+    function initLightning() {
+        function flash() {
+            const el = document.createElement('div');
+            el.className = 'lightning-flash';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 450);
+            scheduleNext();
+        }
+        function scheduleNext() {
+            const delay = 15000 + Math.random() * 25000;
+            setTimeout(flash, delay);
+        }
+        scheduleNext();
+    }
+
+    function spawnConfetti() {
+        const colors = ['#a855f7', '#6366f1', '#e0263f', '#f43f5e', '#38bdf8', '#ffffff'];
+        for (let i = 0; i < 40; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            const duration = 2 + Math.random() * 1.5;
+            piece.style.animationDuration = duration + 's';
+            piece.style.animationDelay = (Math.random() * 0.3) + 's';
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), (duration + 0.3) * 1000 + 200);
+        }
+    }
+
+    function initHoloBadges() {
+        document.addEventListener('mousemove', e => {
+            const badge = e.target.closest ? e.target.closest('.rank-badge') : null;
+            if (!badge) return;
+            const rect = badge.getBoundingClientRect();
+            const mx = ((e.clientX - rect.left) / rect.width) * 100;
+            const my = ((e.clientY - rect.top) / rect.height) * 100;
+            badge.style.setProperty('--mx', mx + '%');
+            badge.style.setProperty('--my', my + '%');
+        });
+    }
+
+    function initPhantomGlitch() {
+        setInterval(() => {
+            document.querySelectorAll('.rank-phantom').forEach(el => {
+                el.classList.add('glitching');
+                setTimeout(() => el.classList.remove('glitching'), 400);
+            });
+        }, 5000);
+    }
+
+    function initGiantKanjiDrift() {
+        const kanjiList = ['幻', '影', '王', '龍', '忍', '侍', '闇', '魂'];
+        function spawnKanji() {
+            const el = document.createElement('div');
+            el.className = 'giant-kanji';
+            el.textContent = kanjiList[Math.floor(Math.random() * kanjiList.length)];
+            el.style.left = (8 + Math.random() * 74) + 'vw';
+            el.style.top = (8 + Math.random() * 74) + 'vh';
+            const rot = (Math.random() * 30 - 15) + 'deg';
+            el.style.setProperty('--rot', rot);
+            const duration = 9 + Math.random() * 4;
+            el.style.animationDuration = duration + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000 + 300);
+        }
+        spawnKanji();
+        setInterval(spawnKanji, 7000);
+    }
+
+    function initBrushStrokes() {
+        const paths = [
+            'M10,100 C60,20 120,140 180,60 C220,20 260,90 290,50',
+            'M20,30 C80,120 140,10 200,100 C240,150 270,60 295,110',
+            'M15,80 C70,10 130,150 190,40 C230,10 260,120 290,70'
+        ];
+        function spawnStroke() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '300');
+            svg.setAttribute('height', '150');
+            svg.setAttribute('viewBox', '0 0 300 150');
+            svg.classList.add('brush-stroke-anim');
+            svg.style.left = Math.random() * 65 + 'vw';
+            svg.style.top = Math.random() * 70 + 'vh';
+            const d = paths[Math.floor(Math.random() * paths.length)];
+            const color = Math.random() > 0.5 ? '#a855f7' : '#e0263f';
+            svg.innerHTML = `<path d="${d}" stroke="${color}" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="420" stroke-dashoffset="420"><animate attributeName="stroke-dashoffset" from="420" to="0" dur="1.7s" fill="freeze"/></path>`;
+            document.body.appendChild(svg);
+            setTimeout(() => svg.remove(), 4400);
+        }
+        spawnStroke();
+        setInterval(spawnStroke, 9000);
+    }
+
+    function initVisualEffects() {
+        initParticleBackground();
+        initCursorGlow();
+        initFloatingGhosts();
+        initTiltEffect();
+        initRippleEffect();
+        initScrollReveal();
+        initTypewriter();
+        initMagneticTitle();
+        initKatakanaRain();
+        initLightning();
+        initHoloBadges();
+        initPhantomGlitch();
+        initGiantKanjiDrift();
+        initBrushStrokes();
+    }
+
+    window.onload = () => {
+        loadRoster();
+        initVisualEffects();
+        initRankPicker();
+    };
+</script>
+</body>
+</html>

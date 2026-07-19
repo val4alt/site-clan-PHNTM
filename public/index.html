@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHNTM Clan - Gestion & Communauté</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-dark: #08080d;
+        --panel-bg: #121218;
+        --panel-bg-alt: #161620;
+        --neon-violet: #a855f7;
+        --neon-violet-2: #6366f1;
+        --neon-glow: rgba(168, 85, 247, 0.4);
+        --text-main: #f3f4f6;
+        --text-muted: #9ca3af;
+        --border-soft: rgba(255,255,255,0.06);
+        --immortal: #f43f5e;
+        --diamant: #38bdf8;
+        --rookie: #22c55e;
+        --hi-red: #e0263f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        min-height: 100vh;
+        padding: 2.5rem 1rem 1rem;
+    }
+
+    .container { max-width: 1150px; margin: 0 auto; position: relative; z-index: 1; }
+
+    header { text-align: center; margin-bottom: 2.5rem; animation: fadeInDown 0.8s ease; }
+
+    .clan-badge-pill {
+        display: inline-block;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--neon-violet);
+        border: 1px solid rgba(168,85,247,0.4);
+        background: rgba(168,85,247,0.08);
+        padding: 0.3rem 0.9rem;
+        border-radius: 999px;
+        margin-bottom: 1rem;
+    }
+
+    .clan-logo-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 3.4rem;
+        font-weight: 700;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+        filter: drop-shadow(0 0 12px var(--neon-violet)) drop-shadow(0 0 26px rgba(168,85,247,0.5));
+    }
+
+    .clan-subtitle { color: var(--text-muted); font-size: 1.05rem; letter-spacing: 1px; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
+        animation: fadeIn 1s ease;
+    }
+
+    .stat-card {
+        background: linear-gradient(160deg, rgba(14,14,19,0.72), rgba(18,18,26,0.62));
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        padding: 1.4rem 1rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+        will-change: transform;
+    }
+
+    .stat-card:hover {
+        border-color: var(--stat-color, var(--neon-violet));
+        box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    }
+
+    .stat-val {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: var(--stat-color, var(--neon-violet));
+        text-shadow: 0 0 12px var(--stat-glow, var(--neon-glow));
+        margin-bottom: 0.15rem;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .main-layout { display: grid; grid-template-columns: 1fr; gap: 1.8rem; }
+
+    @media (min-width: 850px) {
+        .main-layout { grid-template-columns: 2fr 1fr; }
+    }
+
+    .panel {
+        position: relative;
+        background: linear-gradient(160deg, rgba(14,14,19,0.72), rgba(18,18,26,0.62));
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 2rem;
+        box-shadow: 0 10px 34px rgba(0,0,0,0.5);
+        margin-bottom: 1.8rem;
+        transition: transform 0.15s ease, box-shadow 0.25s ease;
+        will-change: transform;
+        animation: panelGlow 7s ease-in-out infinite;
+    }
+
+    @keyframes panelGlow {
+        0%, 100% { box-shadow: 0 10px 34px rgba(0,0,0,0.5); border-color: var(--border-soft); }
+        50% { box-shadow: 0 10px 44px rgba(168,85,247,0.16); border-color: rgba(168,85,247,0.28); }
+    }
+
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* --- PHOTO DE FOND (FIXE) --- */
+    #bg-photo {
+        position: fixed;
+        inset: 0;
+        z-index: -6;
+        background-image: url('assets/hub-eclipse-bg.jpg');
+        background-size: cover;
+        background-position: center 15%;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        filter: saturate(1.15) brightness(1.25);
+        transition: transform 0.3s ease-out;
+    }
+
+    /* Balayage lumineux animé qui glisse sur la photo, sans faire bouger l'image elle-même */
+    #bg-photo-shine {
+        position: fixed;
+        inset: 0;
+        z-index: -5;
+        pointer-events: none;
+        background: linear-gradient(115deg, transparent 30%, rgba(168,85,247,0.16) 48%, rgba(244,63,94,0.12) 52%, transparent 70%);
+        background-size: 320% 320%;
+        animation: bgShineSweep 14s ease-in-out infinite;
+        mix-blend-mode: screen;
+    }
+
+    @keyframes bgShineSweep {
+        0% { background-position: 180% -80%; }
+        50% { background-position: 20% 60%; }
+        100% { background-position: -140% 160%; }
+    }
+
+    #bg-photo-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: -4;
+        pointer-events: none;
+        background:
+            radial-gradient(ellipse at 50% 30%, rgba(80,10,20,0.1), transparent 60%),
+            linear-gradient(to bottom, rgba(5,2,2,0.22) 0%, rgba(8,3,3,0.35) 45%, rgba(5,2,2,0.62) 100%);
+        animation: bgOverlayPulse 9s ease-in-out infinite;
+    }
+
+    @keyframes bgOverlayPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.88; }
+    }
+
+    /* --- REFLET DE L'ECLIPSE SUR L'EAU --- */
+    #eclipse-reflection {
+        position: fixed;
+        left: 50%;
+        top: 66%;
+        width: 380px;
+        height: 260px;
+        transform: translate(-50%, -50%);
+        z-index: -3;
+        pointer-events: none;
+        background: radial-gradient(ellipse at center, rgba(239,68,68,0.4), rgba(255,140,60,0.16) 42%, transparent 72%);
+        filter: blur(14px);
+        animation: reflectionShimmer 4.5s ease-in-out infinite;
+        mix-blend-mode: screen;
+        transition: transform 0.3s ease-out;
+    }
+
+    @keyframes reflectionShimmer {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.8; }
+    }
+
+    ::selection { background: var(--neon-violet); color: #fff; }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(var(--neon-violet), var(--neon-violet-2));
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(#c084fc, var(--neon-violet-2)); }
+
+    .panel-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--neon-violet);
+        padding-left: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-box input {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        color: #fff;
+        width: 250px;
+        transition: 0.25s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--neon-violet);
+        outline: none;
+        box-shadow: 0 0 12px var(--neon-glow);
+    }
+
+    .rank-filter-select {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 0.65rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+    .rank-filter-select:focus { outline: none; border-color: var(--neon-violet); box-shadow: 0 0 12px var(--neon-glow); }
+    .rank-filter-select option { background: #161622; color: #fff; }
+
+    .admin-trigger-zone { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .btn {
+        position: relative;
+        overflow: hidden;
+        background: rgba(168, 85, 247, 0.1);
+        border: 1px solid var(--neon-violet);
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.55);
+        transform: scale(0);
+        animation: rippleAnim 0.6s ease-out;
+        pointer-events: none;
+    }
+
+    .btn:hover { background: var(--neon-violet); box-shadow: 0 0 15px var(--neon-glow); }
+
+    #admin-panel {
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+        border-radius: 14px;
+        padding: 1.7rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        position: relative;
+        overflow: hidden;
+        animation: panelUnlock 0.5s ease;
+    }
+
+    #admin-panel::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-violet), #facc15, var(--neon-violet), transparent);
+        animation: scanSweep 2.5s linear infinite;
+    }
+
+    @keyframes scanSweep { to { left: 100%; } }
+
+    @keyframes panelUnlock {
+        0% { opacity: 0; transform: scale(0.96) translateY(-8px); filter: blur(6px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+
+    .hud-corner { position: absolute; width: 16px; height: 16px; border: 2px solid var(--neon-violet); opacity: 0.7; }
+    .hud-corner.tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+    .hud-corner.tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+    .hud-corner.bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
+    .hud-corner.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+
+    .admin-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--neon-violet);
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        margin-bottom: 1.1rem;
+    }
+
+    .terminal-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 8px #4ade80;
+        animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .password-field { position: relative; display: inline-flex; align-items: center; }
+    .password-field input {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.5rem 2.2rem 0.5rem 0.7rem;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.85rem;
+        transition: 0.25s;
+    }
+    .password-field input:focus { outline: none; border-color: var(--neon-violet); box-shadow: 0 0 10px var(--neon-glow); }
+
+    .pw-toggle {
+        position: absolute;
+        right: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        opacity: 0.55;
+        color: #fff;
+        transition: 0.2s;
+    }
+    .pw-toggle:hover { opacity: 1; }
+
+    .rank-picker-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin: 0.4rem 0 0.6rem;
+    }
+
+    .rank-picker { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.1rem; }
+
+    .rank-chip {
+        cursor: pointer;
+        border: 1.5px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.04);
+        color: var(--text-muted);
+        padding: 0.35rem 0.85rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+    }
+    .rank-chip:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-1px); }
+
+    .rank-chip.active { color: #fff; border-color: transparent; transform: translateY(-2px); }
+    .rank-chip.active.rank-phantom { background: linear-gradient(135deg, #a855f7, #6366f1); box-shadow: 0 0 14px rgba(168,85,247,0.5); }
+    .rank-chip.active.rank-immortal, .rank-chip.active.rank-immortal-mid { background: linear-gradient(135deg, #fb7185, #be123c); box-shadow: 0 0 14px rgba(244,63,94,0.5); }
+    .rank-chip.active.rank-immortal-low { background: rgba(244,63,94,0.22); color: #fda4af; border-color: var(--immortal); }
+    .rank-chip.active.rank-diamant, .rank-chip.active.rank-diamant-mid { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; box-shadow: 0 0 14px rgba(56,189,248,0.5); }
+    .rank-chip.active.rank-diamant-low { background: rgba(56,189,248,0.22); color: #7dd3fc; border-color: var(--diamant); }
+    .rank-chip.active.rank-rookie, .rank-chip.active.rank-rookie-mid { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; box-shadow: 0 0 14px rgba(34,197,94,0.5); }
+    .rank-chip.active.rank-rookie-low { background: rgba(34,197,94,0.22); color: #86efac; border-color: var(--rookie); }
+
+    .badge-preview-row {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1.3rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        min-height: 2rem;
+    }
+
+    .save-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; }
+
+    .btn-spinner {
+        display: none;
+        width: 14px; height: 14px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+    .save-btn.loading .btn-label { opacity: 0.6; }
+    .save-btn.loading .btn-spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .save-btn.success { background: rgba(34,197,94,0.28); border-color: #22c55e; }
+    .save-btn.error-shake { animation: shakeX 0.4s ease; border-color: #ef4444; }
+    @keyframes shakeX {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+    }
+
+    .form-feedback { margin-top: 0.6rem; font-size: 0.8rem; min-height: 1.1rem; }
+    .form-feedback.error { color: #f87171; }
+    .form-feedback.success { color: #4ade80; }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group { position: relative; }
+    .input-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.85rem;
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    .form-group input.has-icon { padding-left: 2.2rem; }
+
+    .form-group input, .form-group select {
+        width: 100%;
+        background: #161622;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.65rem;
+        border-radius: 6px;
+        color: #fff;
+        transition: 0.25s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--neon-violet);
+        box-shadow: 0 0 10px var(--neon-glow);
+    }
+
+    .table-container {
+        position: relative;
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: min(640px, 68vh);
+        border-radius: 10px;
+    }
+
+    .table-container thead th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: #14141c;
+        backdrop-filter: blur(8px);
+    }
+
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+
+    th {
+        padding: 1rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid rgba(255,255,255,0.06);
+        transition: color 0.2s ease, text-shadow 0.2s ease;
+        cursor: default;
+    }
+    th:hover { color: #fff; text-shadow: 0 0 8px var(--neon-glow); }
+
+    td:first-child {
+        border-left: 3px solid transparent;
+        transition: border-left-color 0.25s ease, border-left-width 0.25s ease;
+    }
+    tr.row-phantom:hover td:first-child { border-left-color: #a855f7; border-left-width: 5px; }
+    tr.row-immortal:hover td:first-child { border-left-color: #f43f5e; border-left-width: 5px; }
+    tr.row-diamant:hover td:first-child { border-left-color: #38bdf8; border-left-width: 5px; }
+    tr.row-rookie:hover td:first-child { border-left-color: #22c55e; border-left-width: 5px; }
+
+    /* --- CASCADE D'ENTREE DES LIGNES --- */
+    .row-pop-in { animation: rowSlideIn 0.4s ease both; }
+    @keyframes rowSlideIn {
+        0% { opacity: 0; transform: translateX(-16px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+
+    /* --- CLASSEMENT GEMMES --- */
+    .gems-row-top1 td { background: linear-gradient(90deg, rgba(250,204,21,0.14), transparent 75%); border-left: 3px solid #facc15 !important; }
+    .gems-row-top2 td { background: linear-gradient(90deg, rgba(203,213,225,0.12), transparent 75%); border-left: 3px solid #cbd5e1 !important; }
+    .gems-row-top3 td { background: linear-gradient(90deg, rgba(217,142,74,0.12), transparent 75%); border-left: 3px solid #d98e4a !important; }
+    .gems-rank-medal { font-size: 1.4rem; filter: drop-shadow(0 0 6px rgba(250,204,21,0.5)); }
+    .gems-rank-num { color: var(--text-muted); font-weight: 600; }
+    .gems-cell { display: flex; flex-direction: column; gap: 0.3rem; min-width: 150px; }
+    .gems-value { font-weight: 700; color: #fff; letter-spacing: 0.3px; }
+    .gems-value-top { color: #facc15; text-shadow: 0 0 10px rgba(250,204,21,0.6); font-size: 1.05rem; }
+    .gems-bar-track {
+        position: relative;
+        width: 100%;
+        max-width: 180px;
+        height: 6px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .gems-bar-fill {
+        position: absolute;
+        top: 0; left: 0;
+        height: 100%;
+        width: var(--target, 0%);
+        border-radius: 6px;
+        background: linear-gradient(90deg, #a855f7, #f43f5e);
+        box-shadow: 0 0 8px rgba(244,63,94,0.5);
+        animation: gemsBarGrow 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .gems-row-top1 .gems-bar-fill { background: linear-gradient(90deg, #facc15, #f43f5e); box-shadow: 0 0 10px rgba(250,204,21,0.6); }
+    .gems-row-top2 .gems-bar-fill { background: linear-gradient(90deg, #cbd5e1, #a855f7); }
+    .gems-row-top3 .gems-bar-fill { background: linear-gradient(90deg, #d98e4a, #f43f5e); }
+
+    @keyframes gemsBarGrow {
+        from { width: 0%; }
+        to { width: var(--target, 0%); }
+    }
+
+    @keyframes rowPulseFx {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-3px); }
+        75% { transform: translateX(3px); }
+    }
+    tr.row-pulse { animation: rowPulseFx 0.3s ease; }
+
+    /* --- MEDAILLES & POSITION --- */
+    .medal { margin-right: 0.45rem; font-size: 1rem; filter: drop-shadow(0 0 4px currentColor); }
+    .medal.gold { color: #facc15; }
+    .medal.silver { color: #cbd5e1; }
+    .medal.bronze { color: #d97706; }
+    .position-number { margin-right: 0.5rem; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; }
+
+    /* --- AVATAR SCEAU --- */
+    .player-avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px; height: 26px;
+        margin-right: 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 800;
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        color: #fff;
+        vertical-align: middle;
+        flex-shrink: 0;
+    }
+    .player-avatar.rank-phantom {
+        background: linear-gradient(135deg, #a855f7, #6366f1);
+        box-shadow: 0 0 0 2px rgba(250,204,21,0.5), 0 0 10px rgba(168,85,247,0.4);
+        animation: avatarPhantomPulse 2.6s ease-in-out infinite;
+    }
+    @keyframes avatarPhantomPulse {
+        0%, 100% { box-shadow: 0 0 0 2px rgba(250,204,21,0.5), 0 0 10px rgba(168,85,247,0.4); }
+        50% { box-shadow: 0 0 0 2px rgba(250,204,21,0.8), 0 0 18px rgba(168,85,247,0.7); }
+    }
+    .player-avatar.rank-immortal, .player-avatar.rank-immortal-mid, .player-avatar.rank-immortal-low { background: linear-gradient(135deg, #fb7185, #be123c); box-shadow: 0 0 8px rgba(244,63,94,0.5); }
+    .player-avatar.rank-diamant, .player-avatar.rank-diamant-mid, .player-avatar.rank-diamant-low { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; box-shadow: 0 0 8px rgba(56,189,248,0.5); }
+    .player-avatar.rank-rookie, .player-avatar.rank-rookie-mid, .player-avatar.rank-rookie-low { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+
+    /* --- SEPARATEUR ENTRE GROUPES DE RANG --- */
+    tr.rank-divider td { padding: 0.4rem 1rem 0.15rem; border: none; }
+    tr.rank-divider:hover td { background: transparent; }
+    .divider-label {
+        font-size: 0.65rem;
+        letter-spacing: 3px;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 0.35rem;
+        opacity: 0.6;
+    }
+    .divider-line {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-violet), transparent);
+        background-size: 200% 100%;
+        animation: dividerFlow 3s linear infinite;
+        opacity: 0.5;
+    }
+    @keyframes dividerFlow {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* --- CONTOUR NEON FIN CALQUE SUR LES NUAGES --- */
+    #bg-photo-glow-svg {
+        position: fixed;
+        top: 0; left: 0;
+        z-index: -2;
+        pointer-events: none;
+        overflow: visible;
+    }
+    .glow-contour {
+        fill: none;
+        stroke-linecap: round;
+        stroke-width: 1.1;
+        vector-effect: non-scaling-stroke;
+        opacity: 0.6;
+        animation: neonPulse 4.5s ease-in-out infinite;
+    }
+    .glow-contour.clouds { stroke: url(#neonCloudGradient); }
+
+    @keyframes neonPulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.75; }
+    }
+
+    /* --- SKELETON LOADER --- */
+    .skeleton-bar {
+        height: 18px;
+        border-radius: 6px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.1) 37%, rgba(255,255,255,0.04) 63%);
+        background-size: 400% 100%;
+        animation: skeletonShimmer 1.4s ease infinite;
+    }
+    @keyframes skeletonShimmer {
+        0% { background-position: 100% 0; }
+        100% { background-position: 0 0; }
+    }
+
+    /* --- BOUTONS ACTIONS REVELES AU SURVOL --- */
+    td[data-label="Actions"] .btn { opacity: 0; transition: opacity 0.2s ease; }
+    tr:hover td[data-label="Actions"] .btn { opacity: 1; }
+    @media (hover: none) {
+        td[data-label="Actions"] .btn { opacity: 1; }
+    }
+
+    td { padding: 1.1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); transition: 0.2s; }
+
+    tr:hover td { background: rgba(168, 85, 247, 0.04); color: #fff; }
+
+    tr.row-phantom td { background: linear-gradient(90deg, rgba(168,85,247,0.09), transparent 65%); }
+    tr.row-immortal td { background: linear-gradient(90deg, rgba(244,63,94,0.07), transparent 65%); }
+    tr.row-diamant td { background: linear-gradient(90deg, rgba(56,189,248,0.06), transparent 65%); }
+    tr.row-rookie td { background: linear-gradient(90deg, rgba(34,197,94,0.05), transparent 65%); }
+
+    tr.row-phantom:hover td,
+    tr.row-immortal:hover td,
+    tr.row-diamant:hover td,
+    tr.row-rookie:hover td { background: rgba(168, 85, 247, 0.07); }
+
+    tr.top-player td {
+        box-shadow: inset 0 1px 0 rgba(250,204,21,0.4), inset 0 -1px 0 rgba(250,204,21,0.4);
+        background: linear-gradient(90deg, rgba(250,204,21,0.08), transparent 70%);
+    }
+
+    .rank-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 0.32rem 1rem;
+        clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.05;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -3px 4px rgba(0,0,0,0.3);
+        white-space: nowrap;
+    }
+
+    .rank-badge::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.45), transparent 55%);
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        mix-blend-mode: overlay;
+        pointer-events: none;
+    }
+
+    .rank-badge:hover::before { opacity: 1; }
+
+    .rank-main { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .rank-sub {
+        font-size: 0.56rem;
+        font-weight: 700;
+        opacity: 0.75;
+        letter-spacing: 1.5px;
+        margin-top: 1px;
+    }
+
+    .rank-badge::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -75%;
+        width: 50%; height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+        transform: skewX(-20deg);
+    }
+
+    .rank-icon-diamant {
+        display: inline-block;
+        animation: spinDiamond 3s linear infinite;
+    }
+    @keyframes spinDiamond {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+
+    .rank-icon-immortal {
+        display: inline-block;
+        animation: flicker 1.6s ease-in-out infinite;
+    }
+    @keyframes flicker {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(0.92); }
+    }
+
+    tr:hover .rank-badge::after { animation: shimmer 0.9s ease; }
+
+    .rank-phantom {
+        background: linear-gradient(135deg, #a855f7, #6366f1);
+        color: #fff;
+        text-shadow: 0 0 6px rgba(255,255,255,0.6);
+        border: 1.5px solid rgba(250,204,21,0.65);
+        animation: phantomPulse 2.6s ease-in-out infinite;
+    }
+
+    @keyframes phantomPulse {
+        0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 8px rgba(168,85,247,0.4); }
+        50% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 20px rgba(250,204,21,0.55); }
+    }
+
+    /* --- ANNEAU D'ENERGIE ROTATIF (PHANTOM UNIQUEMENT) --- */
+    @property --angle {
+        syntax: '<angle>';
+        inherits: false;
+        initial-value: 0deg;
+    }
+
+    .phantom-frame {
+        position: relative;
+        display: inline-block;
+        padding: 3px;
+        border-radius: 24px;
+    }
+
+    .phantom-frame::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 26px;
+        background: conic-gradient(from var(--angle), #facc15, #a855f7, #6366f1, #facc15);
+        animation: rotateFrame 4s linear infinite;
+        z-index: -1;
+        filter: blur(1.5px);
+        opacity: 0.85;
+    }
+
+    @keyframes rotateFrame { to { --angle: 360deg; } }
+
+    .phantom-crown {
+        margin-left: 0.3rem;
+        font-size: 0.8rem;
+        filter: drop-shadow(0 0 4px #facc15);
+        animation: crownBob 2.4s ease-in-out infinite;
+    }
+
+    @keyframes crownBob {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px); }
+    }
+
+    .phantom-kanji {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px; height: 15px;
+        margin-left: 0.3rem;
+        font-size: 0.58rem;
+        border: 1px solid #facc15;
+        border-radius: 3px;
+        color: #facc15;
+        background: rgba(224,38,63,0.18);
+    }
+
+    .tier-chevrons { font-size: 0.62rem; letter-spacing: 1px; margin-left: 0.5rem; opacity: 0.75; }
+    .tier-chevrons.immortal { color: var(--immortal); }
+    .tier-chevrons.diamant { color: var(--diamant); }
+    .tier-chevrons.rookie { color: var(--rookie); }
+
+    /* --- TYPOGRAPHIE SPECIALE PHANTOM --- */
+    .rank-phantom .rank-main {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 0.88rem;
+        letter-spacing: 2.5px;
+        font-weight: 700;
+    }
+
+    /* --- PARTICULES SPECIFIQUES PAR RANG --- */
+    .rank-fx { position: relative; display: inline-block; vertical-align: middle; }
+
+    .badge-particles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: visible;
+    }
+
+    .particle {
+        position: absolute;
+        bottom: 20%;
+        border-radius: 50%;
+        opacity: 0;
+    }
+
+    .particle.p1 { left: 12%; animation-delay: 0s; }
+    .particle.p2 { left: 48%; animation-delay: 0.8s; }
+    .particle.p3 { left: 80%; animation-delay: 1.5s; }
+
+    .fx-phantom .particle {
+        width: 4px; height: 4px;
+        background: #c084fc;
+        box-shadow: 0 0 6px #c084fc, 0 0 2px #fff;
+        animation: riseSmoke 3.2s ease-in infinite;
+    }
+
+    .fx-immortal .particle, .fx-immortal-mid .particle, .fx-immortal-low .particle {
+        width: 3px; height: 3px;
+        background: #fb7185;
+        box-shadow: 0 0 6px #fb7185;
+        animation: sparkRise 1.5s ease-out infinite;
+    }
+
+    .fx-diamant .particle, .fx-diamant-mid .particle, .fx-diamant-low .particle {
+        width: 3px; height: 3px;
+        background: #7dd3fc;
+        box-shadow: 0 0 7px #7dd3fc;
+        animation: crystalGlint 2.4s ease-in-out infinite;
+    }
+
+    @keyframes riseSmoke {
+        0% { opacity: 0; transform: translateY(0) scale(0.6); }
+        30% { opacity: 0.75; }
+        100% { opacity: 0; transform: translateY(-24px) scale(1.4); }
+    }
+
+    @keyframes sparkRise {
+        0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.5); }
+        20% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-16px) translateX(4px) scale(0.3); }
+    }
+
+    @keyframes crystalGlint {
+        0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+        50% { opacity: 0.95; transform: scale(1.15) rotate(180deg); }
+    }
+
+    /* --- ENTREE POP DES BADGES --- */
+    .badge-pop {
+        animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes badgePop {
+        0% { transform: scale(0.35); opacity: 0; }
+        65% { transform: scale(1.12); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* --- GLITCH PHANTOM --- */
+    .rank-phantom.glitching .rank-main {
+        animation: glitchText 0.35s steps(2, end);
+    }
+
+    @keyframes glitchText {
+        0%, 100% { text-shadow: 0 0 6px rgba(255,255,255,0.6); transform: translate(0, 0); }
+        20% { text-shadow: -2px 0 #ff2d6a, 2px 0 #22d3ee; transform: translate(-1px, 0); }
+        40% { text-shadow: 2px 0 #ff2d6a, -2px 0 #22d3ee; transform: translate(1px, 0); }
+        60% { text-shadow: -1px 0 #ff2d6a, 1px 0 #22d3ee; transform: translate(0, -1px); }
+        80% { text-shadow: 0 0 6px rgba(255,255,255,0.6); transform: translate(0, 0); }
+    }
+
+    /* --- BRAISE IMMORTAL --- */
+    .fx-immortal::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        background: radial-gradient(circle, rgba(244,63,94,0.4), transparent 70%);
+        filter: blur(5px);
+        z-index: -1;
+        animation: emberPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes emberPulse {
+        0%, 100% { opacity: 0.35; transform: scale(0.9); }
+        50% { opacity: 0.85; transform: scale(1.2); }
+    }
+
+    /* --- ETINCELLE SUPPLEMENTAIRE DIAMANT --- */
+    .fx-diamant::after {
+        content: '✦';
+        position: absolute;
+        top: -9px; right: -7px;
+        font-size: 0.6rem;
+        color: #7dd3fc;
+        text-shadow: 0 0 6px #7dd3fc;
+        animation: sparkleTwinkle 1.7s ease-in-out infinite;
+    }
+
+    @keyframes sparkleTwinkle {
+        0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+        50% { opacity: 1; transform: scale(1.25) rotate(90deg); }
+    }
+
+    /* --- REBOND ROOKIE --- */
+    .tier-chevrons.rookie {
+        display: inline-block;
+        animation: chevronBounce 1.6s ease-in-out infinite;
+    }
+
+    @keyframes chevronBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+
+    .rank-immortal { background: linear-gradient(135deg, #fb7185, #be123c); color: #fff; border: 2px solid rgba(244,63,94,0.5); }
+    .rank-immortal-mid { background: linear-gradient(135deg, #fda4af, #e11d48); color: #fff; opacity: 0.92; border: 1.5px solid rgba(244,63,94,0.35); }
+    .rank-immortal-low { background: rgba(244,63,94,0.12); border: 1px solid var(--immortal); color: #fda4af; box-shadow: none; }
+
+    .rank-diamant { background: linear-gradient(135deg, #7dd3fc, #6366f1); color: #0b1120; border: 2px solid rgba(56,189,248,0.5); }
+    .rank-diamant-mid { background: linear-gradient(135deg, #bae6fd, #818cf8); color: #0b1120; opacity: 0.92; border: 1.5px solid rgba(56,189,248,0.35); }
+    .rank-diamant-low { background: rgba(56,189,248,0.12); border: 1px solid var(--diamant); color: #7dd3fc; box-shadow: none; }
+
+    .rank-rookie { background: linear-gradient(135deg, #4ade80, #15803d); color: #06210f; border: 1.5px solid rgba(34,197,94,0.4); }
+    .rank-rookie-mid { background: linear-gradient(135deg, #86efac, #22c55e); color: #06210f; opacity: 0.92; border: 1px solid rgba(34,197,94,0.3); }
+    .rank-rookie-low { background: rgba(34,197,94,0.12); border: 1px solid var(--rookie); color: #86efac; box-shadow: none; }
+
+    .rank-member { background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
+
+    .action-btn { padding: 0.35rem 0.7rem; font-size: 0.78rem; border-radius: 6px; }
+    .action-btn.danger { border-color: #ef4444; color: #ef4444; }
+    .action-btn.danger:hover { background: #ef4444; color: #fff; box-shadow: 0 0 12px rgba(239,68,68,0.4); }
+
+    .dist-row { margin-bottom: 1.1rem; }
+    .dist-row:last-child { margin-bottom: 0; }
+
+    .dist-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        margin-bottom: 0.4rem;
+        color: var(--text-muted);
+    }
+
+    .dist-label span:first-child { color: var(--text-main); font-weight: 600; }
+
+    .dist-bar-track {
+        background: rgba(255,255,255,0.06);
+        border-radius: 20px;
+        height: 10px;
+        overflow: hidden;
+    }
+
+    .dist-bar-fill {
+        height: 100%;
+        border-radius: 20px;
+        transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 0 10px currentColor;
+    }
+
+    footer {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        padding: 2rem 0 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- HUB DE SELECTION --- */
+    .hub-intro {
+        text-align: center;
+        color: var(--text-muted);
+        margin: 0.5rem 0 0.3rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .hub-intro-kanji {
+        text-align: center;
+        color: var(--hi-red);
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+        opacity: 0.7;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 8px rgba(224,38,63,0.5);
+    }
+
+    /* --- LANTERNES FLOTTANTES --- */
+    .floating-lantern {
+        position: fixed;
+        bottom: -60px;
+        font-size: 1.6rem;
+        opacity: 0;
+        z-index: -1;
+        pointer-events: none;
+        filter: drop-shadow(0 0 8px rgba(250,204,21,0.5));
+        animation: lanternDrift linear forwards;
+    }
+
+    @keyframes lanternDrift {
+        0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.55; }
+        50% { transform: translateY(-55vh) translateX(20px) rotate(3deg); }
+        90% { opacity: 0.55; }
+        100% { transform: translateY(-110vh) translateX(-15px) rotate(-3deg); opacity: 0; }
+    }
+
+    /* --- PETALES DE SAKURA --- */
+    .sakura-petal {
+        position: fixed;
+        top: -30px;
+        font-size: 1.1rem;
+        opacity: 0;
+        z-index: -1;
+        pointer-events: none;
+        animation: petalFall linear forwards;
+    }
+
+    @keyframes petalFall {
+        0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.75; }
+        50% { transform: translateY(50vh) translateX(40px) rotate(180deg); }
+        90% { opacity: 0.75; }
+        100% { transform: translateY(105vh) translateX(-30px) rotate(360deg); opacity: 0; }
+    }
+
+    /* --- PLUIE --- */
+    .rain-drop {
+        position: fixed;
+        top: -8%;
+        pointer-events: none;
+        z-index: -1;
+        animation: rainFall linear infinite;
+    }
+    .rain-drop.layer-back {
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, rgba(190,205,255,0.25), rgba(190,205,255,0.05));
+        filter: blur(0.6px);
+    }
+    .rain-drop.layer-mid {
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, rgba(210,222,255,0.45), rgba(210,222,255,0.1));
+    }
+    .rain-drop.layer-front {
+        width: 1.5px;
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.75), rgba(255,150,150,0.15));
+        filter: drop-shadow(0 0 1.5px rgba(255,180,180,0.4));
+    }
+
+    @keyframes rainFall {
+        0% { transform: translate(0, 0); opacity: 0; }
+        8% { opacity: 1; }
+        92% { opacity: 1; }
+        100% { transform: translate(-38px, 112vh); opacity: 0; }
+    }
+
+    /* --- IMPACTS DE PLUIE AU SOL --- */
+    .rain-splash {
+        position: fixed;
+        bottom: 0;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: rgba(210,225,255,0.5);
+        pointer-events: none;
+        z-index: -1;
+        animation: splashPop linear infinite;
+    }
+
+    @keyframes splashPop {
+        0% { transform: scale(0.3); opacity: 0; }
+        5% { opacity: 0.7; }
+        40% { transform: scale(2.4); opacity: 0; }
+        100% { opacity: 0; }
+    }
+
+    /* --- CADRE ORNE DU HUB --- */
+    #view-hub {
+        position: relative;
+        z-index: 0;
+        background: radial-gradient(ellipse at 50% 22%, rgba(153,27,27,0.15), transparent 60%);
+        border-radius: 20px;
+        overflow: hidden;
+        padding-bottom: 1rem;
+    }
+
+    .eclipse-cloud {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(40,8,8,0.9), transparent 70%);
+        filter: blur(20px);
+        z-index: -1;
+        pointer-events: none;
+        animation: cloudDrift ease-in-out infinite alternate;
+    }
+    .eclipse-cloud.c1 { width: 360px; height: 150px; top: 30px; left: -70px; animation-duration: 30s; }
+    .eclipse-cloud.c2 { width: 320px; height: 130px; top: 10px; right: -60px; animation-duration: 34s; }
+    .eclipse-cloud.c3 { width: 400px; height: 110px; top: 300px; left: -90px; animation-duration: 26s; }
+    .eclipse-cloud.c4 { width: 340px; height: 120px; top: 320px; right: -80px; animation-duration: 38s; }
+
+    @keyframes cloudDrift {
+        from { transform: translateX(0); }
+        to { transform: translateX(45px); }
+    }
+
+    .hub-cards {
+        display: none;
+    }
+
+    /* --- SCENE ORBITALE : PLANETE + CARTES EN ORBITE --- */
+    .orbit-scene {
+        position: relative;
+        height: 420px;
+        max-width: 720px;
+        margin: 1rem auto 2rem;
+        transition: transform 0.25s ease-out;
+    }
+
+    .eclipse-wrap {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 0; height: 0;
+        z-index: 3;
+    }
+
+    .eclipse-spikes {
+        position: absolute;
+        top: 0; left: 0;
+        width: 240px; height: 240px;
+        margin: -120px 0 0 -120px;
+        border-radius: 50%;
+        background: repeating-conic-gradient(rgba(239,68,68,0.55) 0deg 1.5deg, transparent 1.5deg 12deg);
+        filter: blur(1px);
+        -webkit-mask-image: radial-gradient(circle, transparent 28%, black 42%, transparent 68%);
+        mask-image: radial-gradient(circle, transparent 28%, black 42%, transparent 68%);
+        animation: spikesRotate 9s linear infinite;
+        mix-blend-mode: screen;
+    }
+
+    @keyframes spikesRotate { to { transform: rotate(360deg); } }
+
+    .eclipse-beam {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 3px;
+        height: 100vh;
+        margin-left: -1.5px;
+        margin-top: -50vh;
+        background: linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(239,68,68,0) 32%,
+            rgba(239,68,68,0.75) 47%,
+            rgba(255,255,255,0.95) 50%,
+            rgba(239,68,68,0.75) 53%,
+            rgba(239,68,68,0) 68%,
+            transparent 100%
+        );
+        filter: blur(1px);
+        z-index: 2;
+        pointer-events: none;
+        animation: beamPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes beamPulse {
+        0%, 100% { opacity: 0.65; }
+        50% { opacity: 1; }
+    }
+
+    .eclipse-burst {
+        position: absolute;
+        top: 0; left: 0;
+        width: 84px; height: 84px;
+        margin: -42px 0 0 -42px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(239,68,68,0.7) 40%, transparent 72%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .eclipse-burst.flare-active { animation: flareBurst 1.2s ease-out; }
+
+    @keyframes flareBurst {
+        0% { opacity: 0; transform: scale(0.6); }
+        30% { opacity: 1; transform: scale(2); }
+        100% { opacity: 0; transform: scale(3); }
+    }
+
+    .orbit-planet {
+        position: absolute;
+        top: 0; left: 0;
+        width: 84px; height: 84px;
+        margin: -42px 0 0 -42px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #050505 55%, #1a0606 72%, transparent 74%);
+        box-shadow:
+            0 0 0 2px rgba(255,255,255,0.55),
+            0 0 22px 7px rgba(239,68,68,0.8),
+            0 0 58px 18px rgba(220,38,38,0.6),
+            0 0 115px 36px rgba(127,29,29,0.5);
+        animation: eclipsePulse 3s ease-in-out infinite;
+        z-index: 3;
+    }
+
+    @keyframes eclipsePulse {
+        0%, 100% {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.55), 0 0 22px 7px rgba(239,68,68,0.8), 0 0 58px 18px rgba(220,38,38,0.6), 0 0 115px 36px rgba(127,29,29,0.5);
+        }
+        50% {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.75), 0 0 30px 10px rgba(239,68,68,1), 0 0 78px 25px rgba(220,38,38,0.75), 0 0 145px 46px rgba(127,29,29,0.65);
+        }
+    }
+
+    @keyframes coronaSpin { to { transform: rotate(360deg); } }
+    @keyframes rayRotate { to { transform: rotate(360deg); } }
+
+    .orbit-planet::before {
+        content: '';
+        position: absolute;
+        inset: -38px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg,
+            transparent 0deg, rgba(239,68,68,0.6) 8deg, transparent 18deg,
+            transparent 88deg, rgba(127,29,29,0.5) 98deg, transparent 108deg,
+            transparent 178deg, rgba(239,68,68,0.6) 186deg, transparent 196deg,
+            transparent 266deg, rgba(127,29,29,0.5) 276deg, transparent 286deg,
+            transparent 360deg);
+        filter: blur(7px);
+        animation: coronaSpin 6s linear infinite;
+        z-index: -1;
+    }
+
+    .orbit-planet::after {
+        content: '';
+        position: absolute;
+        inset: -78px;
+        border-radius: 50%;
+        background: repeating-conic-gradient(rgba(239,68,68,0.16) 0deg 8deg, transparent 8deg 24deg);
+        -webkit-mask-image: radial-gradient(circle, black 42%, transparent 78%);
+        mask-image: radial-gradient(circle, black 42%, transparent 78%);
+        animation: rayRotate 22s linear infinite reverse;
+        z-index: -2;
+    }
+
+    .orbit-card {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 230px;
+        margin: -110px 0 0 -115px;
+        background: linear-gradient(160deg, rgba(14,14,19,0.75), rgba(18,18,26,0.65));
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 1.8rem 1.2rem;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 10px 34px rgba(0,0,0,0.5);
+        animation: orbitPath 18s linear infinite;
+    }
+
+    .orbit-card.card-b { animation-delay: -9s; }
+
+    .orbit-scene:hover .orbit-card:not(.card-selecting) { animation-play-state: paused; }
+
+    @keyframes orbitPath {
+        0%    { transform: translate(270px, 0px)   scale(0.82); z-index: 1; opacity: 0.8; }
+        12.5% { transform: translate(191px, -95px) scale(0.95); z-index: 3; opacity: 1; }
+        25%   { transform: translate(0px, -135px)  scale(1.05); z-index: 3; opacity: 1; }
+        37.5% { transform: translate(-191px, -95px) scale(0.95); z-index: 3; opacity: 1; }
+        50%   { transform: translate(-270px, 0px)  scale(0.82); z-index: 1; opacity: 0.8; }
+        62.5% { transform: translate(-191px, 95px) scale(0.62); z-index: 0; opacity: 0.5; }
+        75%   { transform: translate(0px, 135px)   scale(0.55); z-index: 0; opacity: 0.42; }
+        87.5% { transform: translate(191px, 95px)  scale(0.62); z-index: 0; opacity: 0.5; }
+        100%  { transform: translate(270px, 0px)   scale(0.82); z-index: 1; opacity: 0.8; }
+    }
+
+    .orbit-card.card-selecting {
+        animation: cardSelectPulse 0.7s ease-out forwards;
+        z-index: 10;
+    }
+
+    @keyframes cardSelectPulse {
+        0% { transform: scale(1); filter: brightness(1); opacity: 1; }
+        60% { transform: scale(1.2); filter: brightness(1.7); box-shadow: 0 0 70px rgba(168,85,247,0.9); }
+        100% { transform: scale(0.8); filter: brightness(2); opacity: 0; }
+    }
+
+    @media (max-width: 780px) {
+        .orbit-scene {
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .orbit-planet { display: none; }
+        .orbit-card {
+            position: relative;
+            top: auto; left: auto;
+            margin: 0;
+            width: 100%;
+            animation: none;
+            transform: none;
+            opacity: 1;
+        }
+        .orbit-card.card-selecting { animation: cardSelectPulse 0.7s ease-out forwards; }
+    }
+
+    .warp-flash {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(168,85,247,0.45) 55%, transparent 100%);
+        z-index: 9999;
+        pointer-events: none;
+        animation: warpFlashAnim 0.5s ease-out forwards;
+    }
+
+    @keyframes warpFlashAnim {
+        0% { opacity: 0; }
+        30% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    .hub-card-icon { font-size: 2.6rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(255,140,60,0.5)); }
+
+    .hub-card-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        color: #fff;
+    }
+
+    .hub-card-desc { color: var(--text-muted); font-size: 0.85rem; }
+
+    .orbit-card.disabled-card { opacity: 0.85; }
+    .orbit-card.disabled-card .hub-card-title { color: var(--text-muted); }
+    .orbit-card.disabled-card .hub-card-icon { filter: grayscale(0.5) drop-shadow(0 0 8px rgba(224,38,63,0.3)); }
+
+    .back-to-hub-btn { margin-bottom: 1.5rem; }
+
+    .coming-soon-panel {
+        text-align: center;
+        padding: 3rem 2rem;
+        max-width: 520px;
+        margin: 1rem auto 2rem;
+    }
+
+    .coming-soon-kanji {
+        font-size: 3rem;
+        color: var(--hi-red);
+        opacity: 0.55;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 20px rgba(224,38,63,0.4);
+    }
+
+    /* --- JOURNAL DE COMBATS --- */
+    .combat-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        align-items: center;
+        margin-bottom: 1.2rem;
+    }
+    .combat-controls input[type="password"] {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.55rem 0.8rem;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.85rem;
+    }
+    .combat-controls input[type="password"]:focus { outline: none; border-color: var(--neon-violet); box-shadow: 0 0 10px var(--neon-glow); }
+
+    .combat-form {
+        display: none;
+        background: rgba(0,0,0,0.25);
+        border: 1px dashed rgba(168,85,247,0.35);
+        border-radius: 12px;
+        padding: 1.3rem;
+        margin-bottom: 1.5rem;
+        animation: panelUnlock 0.4s ease;
+    }
+
+    .combat-date-group { margin-bottom: 1.4rem; }
+    .combat-date-group:last-child { margin-bottom: 0; }
+
+    .combat-date-label {
+        font-size: 0.75rem;
+        color: var(--hi-red);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.6rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid rgba(224,38,63,0.2);
+    }
+
+    .combat-entry {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.55rem 0.4rem;
+        font-size: 0.88rem;
+        flex-wrap: wrap;
+        border-radius: 6px;
+        transition: background 0.2s ease;
+    }
+    .combat-entry:hover { background: rgba(168,85,247,0.05); }
+
+    .combat-swords { font-size: 0.9rem; opacity: 0.75; }
+    .combat-players { color: var(--text-muted); }
+    .combat-vs { opacity: 0.5; font-size: 0.75rem; margin: 0 0.15rem; }
+    .combat-vs-score { font-weight: 700; color: #fff; margin: 0 0.3rem; letter-spacing: 1px; }
+    .combat-winner { color: #facc15; font-weight: 800; text-shadow: 0 0 6px rgba(250,204,21,0.5); }
+    .combat-loser { color: var(--text-muted); }
+    .combat-pending { color: var(--text-muted); font-style: italic; font-size: 0.8rem; }
+
+    .combat-delete-btn {
+        margin-left: auto;
+        background: none;
+        border: none;
+        color: #f87171;
+        opacity: 0;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: opacity 0.2s ease;
+    }
+    .combat-entry:hover .combat-delete-btn { opacity: 0.65; }
+    .combat-delete-btn:hover { opacity: 1 !important; }
+    @media (hover: none) { .combat-delete-btn { opacity: 0.65; } }
+
+    /* --- BADGE BILAN V/D DANS LE ROSTER --- */
+    .record-badge { font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+    .record-win { color: #4ade80; }
+    .record-loss { color: #f87171; }
+    .record-badge.neutral { color: var(--text-muted); }
+
+    /* --- NOTES TRONQUEES --- */
+    .note-toggle {
+        display: inline-block;
+        margin-left: 0.4rem;
+        background: none;
+        border: none;
+        color: var(--neon-violet);
+        font-size: 0.75rem;
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 0;
+    }
+    .note-toggle:hover { color: #c084fc; }
+
+    /* --- VUE COMPACTE --- */
+    table.compact td { padding: 0.5rem 0.7rem; font-size: 0.82rem; }
+    table.compact th { padding: 0.6rem 0.7rem; }
+    table.compact .rank-badge { padding: 0.16rem 0.65rem; font-size: 0.62rem; }
+    table.compact .rank-sub { font-size: 0.5rem; }
+    table.compact .badge-particles { display: none; }
+    table.compact .phantom-frame::before { animation: none; opacity: 0.4; }
+    table.compact td[data-label="Note"] {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    table.compact .note-toggle,
+    table.compact .note-full { display: none !important; }
+    table.compact .note-preview { display: inline !important; }
+    table.compact .tier-chevrons,
+    table.compact .phantom-crown,
+    table.compact .phantom-kanji { display: none; }
+    table.compact .player-avatar { width: 18px; height: 18px; font-size: 0.6rem; margin-right: 0.35rem; }
+
+    @media (max-width: 640px) {
+        .clan-logo-title { font-size: 2.3rem; letter-spacing: 3px; }
+        .panel { padding: 1.3rem; }
+        thead { display: none; }
+        table, tbody, tr, td { display: block; width: 100%; }
+        tr {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 0.8rem;
+        }
+        td {
+            border: none;
+            padding: 0.4rem 0.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        td::before {
+            content: attr(data-label);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    #bg-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -2;
+        pointer-events: none;
+    }
+
+    #cursor-glow {
+        position: fixed;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(168,85,247,0.22), transparent 70%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 0;
+        mix-blend-mode: screen;
+        transition: opacity 0.3s;
+    }
+
+    @media (hover: none) {
+        #cursor-glow { display: none; }
+    }
+
+    .floating-ghost {
+        position: fixed;
+        bottom: -60px;
+        font-size: 1.4rem;
+        opacity: 0;
+        z-index: -1;
+        pointer-events: none;
+        filter: drop-shadow(0 0 6px var(--neon-violet));
+        animation: floatUp linear forwards;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 3px);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    @keyframes titleGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes titleFlicker {
+        0%, 91%, 100% { opacity: 1; }
+        92% { opacity: 0.65; }
+        93% { opacity: 1; }
+        94.5% { opacity: 0.45; }
+        95.5% { opacity: 1; }
+    }
+
+    @keyframes rippleAnim {
+        to { transform: scale(2.6); opacity: 0; }
+    }
+
+    @keyframes shimmer {
+        100% { left: 125%; }
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.4; }
+        90% { opacity: 0.4; }
+        100% { transform: translateY(-115vh) rotate(15deg); opacity: 0; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* --- ACCENTS JAPONAIS --- */
+    .hanko-stamp {
+        position: absolute;
+        top: -6px;
+        right: -18px;
+        width: 58px;
+        height: 58px;
+        border: 2.5px solid var(--hi-red);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--hi-red);
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        transform: rotate(-8deg);
+        opacity: 0.85;
+        box-shadow: 0 0 14px rgba(224,38,63,0.35);
+        writing-mode: vertical-rl;
+        background: rgba(224,38,63,0.05);
+        animation: hankoPulse 5s ease-in-out infinite;
+    }
+
+    @keyframes hankoPulse {
+        0%, 100% { box-shadow: 0 0 14px rgba(224,38,63,0.35); }
+        50% { box-shadow: 0 0 22px rgba(224,38,63,0.6); }
+    }
+
+    .header-wrapper { position: relative; display: inline-block; }
+
+    .jp-subtitle-kana {
+        font-size: 0.85rem;
+        letter-spacing: 4px;
+        color: var(--hi-red);
+        opacity: 0.75;
+        margin-top: 0.3rem;
+        text-shadow: 0 0 8px rgba(224,38,63,0.5);
+    }
+
+    .vertical-jp-strip {
+        position: fixed;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        writing-mode: vertical-rl;
+        font-size: 0.85rem;
+        letter-spacing: 6px;
+        color: rgba(255,255,255,0.12);
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+        display: none;
+    }
+
+    @media (min-width: 1050px) {
+        .vertical-jp-strip { display: block; }
+    }
+
+    .panel-title-kanji {
+        font-size: 0.68rem;
+        color: var(--hi-red);
+        opacity: 0.6;
+        letter-spacing: 3px;
+        margin-left: 0.6rem;
+        font-weight: 500;
+        text-transform: none;
+    }
+
+    .brush-divider {
+        width: 100%;
+        height: 14px;
+        margin: 0 0 1.6rem;
+        opacity: 0.55;
+    }
+
+    .seigaiha-strip {
+        position: relative;
+        height: 22px;
+        margin-top: 1.6rem;
+        opacity: 0.35;
+        background-image: radial-gradient(circle at 10px -6px, transparent 12px, rgba(168,85,247,0.35) 13px, rgba(168,85,247,0.35) 14px, transparent 15px);
+        background-size: 24px 24px;
+        background-repeat: repeat-x;
+    }
+
+    .mini-hanko {
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        width: 26px;
+        height: 26px;
+        border: 1.5px solid var(--hi-red);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--hi-red);
+        font-size: 0.68rem;
+        opacity: 0.55;
+        transform: rotate(-6deg);
+    }
+
+    .katakana-fall {
+        position: fixed;
+        top: -30px;
+        font-size: 1rem;
+        color: rgba(168,85,247,0.35);
+        z-index: -1;
+        pointer-events: none;
+        user-select: none;
+        text-shadow: 0 0 6px rgba(168,85,247,0.4);
+        animation: kanaFall linear forwards;
+    }
+
+    @keyframes kanaFall {
+        0% { transform: translateY(0); opacity: 0; }
+        8% { opacity: 0.6; }
+        92% { opacity: 0.6; }
+        100% { transform: translateY(110vh); opacity: 0; }
+    }
+
+    /* --- KANJI GEANTS EN ARRIERE-PLAN --- */
+    .giant-kanji {
+        position: fixed;
+        font-size: 6rem;
+        font-weight: 700;
+        color: rgba(224,38,63,0.09);
+        z-index: -1;
+        pointer-events: none;
+        user-select: none;
+        filter: blur(2px);
+        text-shadow: 0 0 45px rgba(168,85,247,0.35);
+        animation: kanjiInkBleed linear forwards;
+    }
+
+    @keyframes kanjiInkBleed {
+        0% { opacity: 0; transform: scale(0.6) rotate(var(--rot, 0deg)); filter: blur(10px); }
+        15% { opacity: 1; filter: blur(1px); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: scale(1.15) rotate(var(--rot, 0deg)); filter: blur(4px); }
+    }
+
+    /* --- TRAITS DE PINCEAU ANIMES --- */
+    .brush-stroke-anim {
+        position: fixed;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+        animation: brushAppear 4.2s ease-out forwards;
+    }
+
+    @keyframes brushAppear {
+        0% { opacity: 0; }
+        10% { opacity: 0.55; }
+        70% { opacity: 0.55; }
+        100% { opacity: 0; }
+    }
+
+    /* --- GRAIN CINEMA --- */
+    .grain-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* --- ECLAIR --- */
+    .lightning-flash {
+        position: fixed;
+        inset: 0;
+        background: rgba(168,85,247,0.06);
+        z-index: 40;
+        pointer-events: none;
+        opacity: 0;
+        animation: flashPulse 0.4s ease-out;
+    }
+
+    @keyframes flashPulse {
+        0% { opacity: 0; }
+        15% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* --- HALO PULSANT DERRIERE LE LOGO --- */
+    .logo-halo {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 340px; height: 180px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(ellipse, rgba(168,85,247,0.35), transparent 70%);
+        z-index: -1;
+        animation: haloPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes haloPulse {
+        0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.15); }
+    }
+
+    /* --- TITRE MAGNETIQUE --- */
+    .clan-logo-title .letter {
+        display: inline-block;
+        transition: transform 0.15s ease-out;
+        background: linear-gradient(90deg, #fff, var(--neon-violet), #6366f1, #fff);
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: titleGradient 6s ease infinite, titleFlicker 9s infinite;
+    }
+
+    /* --- TYPEWRITER CURSOR --- */
+    .typewriter-cursor {
+        display: inline-block;
+        width: 2px;
+        background: var(--text-muted);
+        margin-left: 2px;
+        animation: blinkCursor 0.9s step-end infinite;
+    }
+
+    @keyframes blinkCursor {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    /* --- CONFETTIS --- */
+    .confetti-piece {
+        position: fixed;
+        top: -20px;
+        width: 8px;
+        height: 8px;
+        z-index: 60;
+        pointer-events: none;
+        animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* --- SELECTEUR DE LANGUE --- */
+    .lang-toggle-btn {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 70;
+        background: rgba(168, 85, 247, 0.12);
+        border: 1px solid var(--neon-violet);
+        color: #fff;
+        padding: 0.5rem 1.1rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: 0.25s;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    }
+    .lang-toggle-btn:hover {
+        background: rgba(168,85,247,0.28);
+        box-shadow: 0 0 14px var(--neon-glow);
+    }
+    @media (max-width: 640px) {
+        .lang-toggle-btn { top: 0.6rem; right: 0.6rem; padding: 0.4rem 0.8rem; font-size: 0.68rem; }
+    }
+</style>
+</head>
+<body>
+<div id="bg-photo"></div>
+<div id="bg-photo-shine"></div>
+<div id="bg-photo-overlay"></div>
+<div id="eclipse-reflection"></div>
+<svg id="bg-photo-glow-svg" viewBox="0 0 896 729" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="neonCloudGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="50%" stop-color="#f43f5e"/>
+            <stop offset="100%" stop-color="#c084fc"/>
+        </linearGradient>
+        <filter id="neonGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="1.1" result="blur"/>
+            <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    <path class="glow-contour clouds" filter="url(#neonGlow)" d="M 0 60 C 16.7 52.5, 75.0 24.2, 100 15 C 125.0 5.8, 133.3 4.5, 150 5 C 166.7 5.5, 183.3 13.8, 200 18 C 216.7 22.2, 233.3 26.7, 250 30 C 266.7 33.3, 283.3 37.0, 300 38 C 316.7 39.0, 333.3 40.7, 350 36 C 366.7 31.3, 383.3 15.3, 400 10 C 416.7 4.7, 433.3 4.7, 450 4 C 466.7 3.3, 483.3 3.3, 500 6 C 516.7 8.7, 533.3 18.5, 550 20 C 566.7 21.5, 583.3 9.2, 600 15 C 616.7 20.8, 633.3 48.8, 650 55 C 666.7 61.2, 683.3 52.0, 700 52 C 716.7 52.0, 733.3 55.7, 750 55 C 766.7 54.3, 775.7 50.2, 800 48 C 824.3 45.8, 880.0 43.0, 896 42"/>
+</svg>
+</svg>
+<div class="grain-overlay"></div>
+<button id="lang-toggle-btn" class="lang-toggle-btn" onclick="toggleLanguage()" title="Switch language / Changer de langue">EN</button>
+
+<div class="container">
+    <div class="vertical-jp-strip">幻影 PHANTOM CLAN 幻影</div>
+    <div class="vertical-jp-strip" style="left:auto; right:14px;">侍 幻影 王 龍 侍</div>
+
+    <header>
+        <div class="clan-badge-pill" data-i18n="badge_roster">Roster Officiel</div>
+        <div class="header-wrapper">
+            <div class="logo-halo"></div>
+            <div class="clan-logo-title" id="clan-title">PHNTM</div>
+            <div class="hanko-stamp">幻影</div>
+        </div>
+        <div class="clan-subtitle" id="clan-subtitle"></div>
+        <div class="jp-subtitle-kana">ファントム・クラン</div>
+    </header>
+
+    <svg class="brush-divider" viewBox="0 0 400 14" preserveAspectRatio="none">
+        <path d="M2,7 C60,2 140,12 200,6 C260,1 340,11 398,5" stroke="url(#brushGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <defs>
+            <linearGradient id="brushGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="transparent"/>
+                <stop offset="15%" stop-color="#e0263f"/>
+                <stop offset="50%" stop-color="#ffb347"/>
+                <stop offset="85%" stop-color="#e0263f"/>
+                <stop offset="100%" stop-color="transparent"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <div id="view-hub" class="site-view">
+
+        <div class="eclipse-cloud c1"></div>
+        <div class="eclipse-cloud c2"></div>
+        <div class="eclipse-cloud c3"></div>
+        <div class="eclipse-cloud c4"></div>
+
+        <div class="hub-intro" data-i18n="hub_choose">Choisis une section</div>
+        <div class="hub-intro-kanji">選択の刻</div>
+
+        <div class="orbit-scene">
+            <div class="eclipse-wrap">
+                <div class="eclipse-beam"></div>
+                <div class="eclipse-spikes"></div>
+                <div class="orbit-planet"></div>
+                <div class="eclipse-burst" id="eclipse-burst"></div>
+            </div>
+            <div class="orbit-card" onclick="spinAndNavigate(this, 'roster')">
+                <div class="hub-card-icon">🏆</div>
+                <div class="hub-card-title" data-i18n="card_roster_title">Roster & Rangs</div>
+                <div class="hub-card-desc" data-i18n="card_roster_desc">Membres, rangs de compétence, combats internes</div>
+            </div>
+            <div class="orbit-card card-b" onclick="spinAndNavigate(this, 'gems')">
+                <div class="hub-card-icon">💎</div>
+                <div class="hub-card-title" data-i18n="card_new_title">Classement Gemmes</div>
+                <div class="hub-card-desc" data-i18n="card_new_desc">Classement communautaire par gemmes récoltées</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-gems" class="site-view" style="display:none;">
+        <button class="btn back-to-hub-btn" onclick="showView('hub')" data-i18n="back_hub">← Retour au hub</button>
+        <div class="panel reveal">
+            <div class="panel-title"><span data-i18n="panel_gems">Classement Gemmes</span><span class="panel-title-kanji">宝石</span></div>
+            <table class="roster-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="th_gems_rank">#</th>
+                        <th data-i18n="th_pseudo">Pseudo</th>
+                        <th data-i18n="th_gems">Gemmes</th>
+                    </tr>
+                </thead>
+                <tbody id="gems-tbody">
+                    <tr><td colspan="3" style="text-align:center; color:var(--text-muted);" data-i18n="loading">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="view-comingsoon" class="site-view" style="display:none;">
+        <button class="btn back-to-hub-btn" onclick="showView('hub')" data-i18n="back_hub">← Retour au hub</button>
+        <div class="panel reveal coming-soon-panel">
+            <div class="coming-soon-kanji">準備中</div>
+            <div class="panel-title" style="justify-content:center;" data-i18n="coming_soon_title">Nouveau Système de Classement</div>
+            <p style="color: var(--text-muted); margin-top: 0.8rem;" data-i18n="coming_soon_text">Cette section est en cours de préparation. Reviens un peu plus tard !</p>
+        </div>
+    </div>
+
+    <div id="view-roster" class="site-view" style="display:none;">
+        <button class="btn back-to-hub-btn" onclick="showView('hub')" data-i18n="back_hub">← Retour au hub</button>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label" data-i18n="stat_total">Membres Actifs</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#a855f7; --stat-glow:rgba(168,85,247,0.4);">
+            <div class="stat-val" id="stat-phantom">0</div>
+            <div class="stat-label" data-i18n="stat_phantom">Phantom</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#f43f5e; --stat-glow:rgba(244,63,94,0.4);">
+            <div class="stat-val" id="stat-immortal">0</div>
+            <div class="stat-label" data-i18n="stat_immortal">Immortal</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#38bdf8; --stat-glow:rgba(56,189,248,0.4);">
+            <div class="stat-val" id="stat-diamant">0</div>
+            <div class="stat-label" data-i18n="stat_diamant">Diamant</div>
+        </div>
+        <div class="stat-card" style="--stat-color:#22c55e; --stat-glow:rgba(34,197,94,0.4);">
+            <div class="stat-val" id="stat-rookie">0</div>
+            <div class="stat-label" data-i18n="stat_rookie">Rookie</div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <main class="panel reveal">
+            <div class="panel-title"><span data-i18n="panel_roster">Roster du Clan</span><span class="panel-title-kanji">名簿</span></div>
+            <div class="mini-hanko">組</div>
+
+            <div class="controls-bar">
+                <div class="search-box">
+                    <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Rechercher un membre..." oninput="filterPlayers()">
+                </div>
+                <select id="rank-filter" class="rank-filter-select" onchange="filterPlayers()">
+                    <option value="all" data-i18n="filter_all">Tous les rangs</option>
+                    <option value="phantom" data-i18n="filter_phantom">Phantom</option>
+                    <option value="immortal" data-i18n="filter_immortal">Immortal (tous)</option>
+                    <option value="diamant" data-i18n="filter_diamant">Diamant (tous)</option>
+                    <option value="rookie" data-i18n="filter_rookie">Rookie (tous)</option>
+                </select>
+                <button class="btn" id="compact-toggle-btn" onclick="toggleCompactView()" data-i18n="compact_view">Vue compacte</button>
+                <div class="admin-trigger-zone">
+                    <div class="password-field">
+                        <input type="password" id="admin-password" data-i18n-placeholder="admin_key_placeholder" placeholder="Clé d'administration">
+                        <button type="button" class="pw-toggle" onclick="togglePasswordVisibility()" aria-label="Afficher/masquer le mot de passe">👁</button>
+                    </div>
+                    <button class="btn" onclick="toggleAdminPanel()" data-i18n="edit_mode">Mode Édition</button>
+                </div>
+            </div>
+
+            <div id="admin-panel">
+                <div class="hud-corner tl"></div>
+                <div class="hud-corner tr"></div>
+                <div class="hud-corner bl"></div>
+                <div class="hud-corner br"></div>
+
+                <h4 class="admin-panel-title"><span class="terminal-dot"></span><span data-i18n="admin_panel_title">Ajouter / Modifier un Joueur</span></h4>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <span class="input-icon">🎮</span>
+                        <input type="text" id="player-pseudo" class="has-icon" data-i18n-placeholder="pseudo_placeholder" placeholder="Pseudo exact">
+                    </div>
+                    <div class="form-group">
+                        <span class="input-icon">📝</span>
+                        <input type="text" id="player-note" class="has-icon" data-i18n-placeholder="note_placeholder" placeholder="Commentaires / Notes">
+                    </div>
+                    <div class="form-group">
+                        <span class="input-icon">🇬🇧</span>
+                        <input type="text" id="player-note-en" class="has-icon" data-i18n-placeholder="note_en_placeholder" placeholder="Notes (anglais) — optionnel">
+                    </div>
+                    <div class="form-group">
+                        <span class="input-icon">💎</span>
+                        <input type="number" id="player-gems" class="has-icon" data-i18n-placeholder="gems_placeholder" placeholder="Gemmes (optionnel)" min="0">
+                    </div>
+                </div>
+
+                <div class="rank-picker-label" data-i18n="rank_picker_label">Rang de skill</div>
+                <div class="rank-picker" id="rank-picker"></div>
+
+                <div class="badge-preview-row">
+                    <span data-i18n="preview_label">Aperçu :</span>
+                    <span id="badge-preview"></span>
+                </div>
+
+                <button class="btn save-btn" id="save-btn" onclick="savePlayer()">
+                    <span class="btn-label" data-i18n="save_btn">Enregistrer</span>
+                    <span class="btn-spinner"></span>
+                </button>
+                <div class="form-feedback" id="form-feedback"></div>
+            </div>
+
+            <div class="table-container">
+                <div class="hud-corner tl"></div>
+                <div class="hud-corner tr"></div>
+                <div class="hud-corner bl"></div>
+                <div class="hud-corner br"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="th_pseudo">Pseudo</th>
+                            <th data-i18n="th_rank">Rang de Skill</th>
+                            <th data-i18n="th_note">Note / Remarques</th>
+                            <th data-i18n="th_record">Bilan</th>
+                            <th data-i18n="th_actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-tbody">
+                        <tr class="skeleton-row"><td colspan="5"><div class="skeleton-bar"></div></td></tr>
+                        <tr class="skeleton-row"><td colspan="5"><div class="skeleton-bar" style="width:80%"></div></td></tr>
+                        <tr class="skeleton-row"><td colspan="5"><div class="skeleton-bar" style="width:90%"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <aside>
+            <div class="panel reveal">
+                <div class="panel-title"><span data-i18n="panel_about">À Propos</span><span class="panel-title-kanji">概要</span></div>
+                <p style="color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; margin-bottom: 1.5rem;" data-i18n-html="about_text_html">
+                    Bienvenue sur la plateforme officielle du clan <strong>PHNTM</strong>. Nous regroupons l'élite des joueurs compétitifs axés sur la performance, la réactivité et la maîtrise stratégique.
+                </p>
+                <div style="background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.1); padding: 1rem; border-radius: 8px; font-size: 0.85rem;">
+                    <span style="color: var(--neon-violet); font-weight: bold;" data-i18n="recruit_status_label">Statut des recrutements :</span><br> <span data-i18n="recruit_status_text">Sur invitation ou via test de niveau uniquement.</span>
+                </div>
+            </div>
+
+            <div class="panel reveal">
+                <div class="panel-title"><span data-i18n="panel_distribution">Répartition des Rangs</span><span class="panel-title-kanji">階級</span></div>
+                <div id="rank-distribution"></div>
+                <div class="seigaiha-strip"></div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="panel reveal">
+        <div class="panel-title"><span data-i18n="panel_combats">Journal de Combats</span><span class="panel-title-kanji">対戦記録</span></div>
+
+        <div class="combat-controls">
+            <input type="password" id="combat-password" data-i18n-placeholder="admin_key_placeholder" placeholder="Clé d'administration">
+            <button class="btn" onclick="toggleCombatForm()" data-i18n="combat_add_btn">Ajouter un combat</button>
+        </div>
+
+        <div id="combat-form" class="combat-form">
+            <div class="form-grid">
+                <div class="form-group"><input type="date" id="combat-date"></div>
+                <div class="form-group"><input type="text" id="combat-p1" data-i18n-placeholder="combat_p1_placeholder" placeholder="Joueur 1"></div>
+                <div class="form-group"><input type="number" id="combat-s1" data-i18n-placeholder="combat_s1_placeholder" placeholder="Score 1" min="0"></div>
+                <div class="form-group"><input type="text" id="combat-p2" data-i18n-placeholder="combat_p2_placeholder" placeholder="Joueur 2"></div>
+                <div class="form-group"><input type="number" id="combat-s2" data-i18n-placeholder="combat_s2_placeholder" placeholder="Score 2" min="0"></div>
+            </div>
+            <button class="btn save-btn" id="combat-save-btn" onclick="saveCombat()">
+                <span class="btn-label" data-i18n="combat_save_btn">Enregistrer le combat</span>
+                <span class="btn-spinner"></span>
+            </button>
+            <div class="form-feedback" id="combat-feedback"></div>
+        </div>
+
+        <div id="combat-journal">
+            <div style="text-align:center; color:var(--text-muted);" data-i18n="loading">Chargement...</div>
+        </div>
+    </div>
+
+    </div>
+
+    <footer id="site-footer" data-i18n="footer">© 2026 PHNTM Clan — Database Opérationnelle</footer>
+</div>
+
+<script>
+    let allPlayers = [];
+    let allCombats = [];
+    let selectedRank = 'Rookie';
+    let currentDisplayed = [];
+    let sortField = 'rank';
+    let sortDir = 1;
+    let selectedForBulk = new Set();
+    let lastChangedPseudo = null;
+
+    // ============ INTERNATIONALISATION (FR / EN) ============
+    const I18N = {
+        fr: {
+            badge_roster: "Roster Officiel",
+            subtitle: "Database Opérationnelle & Roster Officiel",
+            hub_choose: "Choisis une section",
+            card_roster_title: "Roster & Rangs",
+            card_roster_desc: "Membres, rangs de compétence, combats internes",
+            card_new_title: "Classement Gemmes",
+            card_new_desc: "Classement communautaire par gemmes récoltées",
+            back_hub: "← Retour au hub",
+            coming_soon_title: "Nouveau Système de Classement",
+            coming_soon_text: "Cette section est en cours de préparation. Reviens un peu plus tard !",
+            stat_total: "Membres Actifs",
+            stat_phantom: "Phantom",
+            stat_immortal: "Immortal",
+            stat_diamant: "Diamant",
+            stat_rookie: "Rookie",
+            panel_roster: "Roster du Clan",
+            search_placeholder: "Rechercher un membre...",
+            filter_all: "Tous les rangs",
+            filter_phantom: "Phantom",
+            filter_immortal: "Immortal (tous)",
+            filter_diamant: "Diamant (tous)",
+            filter_rookie: "Rookie (tous)",
+            compact_view: "Vue compacte",
+            detailed_view: "Vue détaillée",
+            admin_key_placeholder: "Clé d'administration",
+            edit_mode: "Mode Édition",
+            admin_panel_title: "Ajouter / Modifier un Joueur",
+            pseudo_placeholder: "Pseudo exact",
+            note_placeholder: "Commentaires / Notes",
+            note_en_placeholder: "Notes (anglais) — optionnel",
+            gems_placeholder: "Gemmes (optionnel)",
+            panel_gems: "Classement Gemmes",
+            th_gems_rank: "#",
+            th_gems: "Gemmes",
+            no_gems_yet: "Aucune donnée de gemmes pour le moment.",
+            rank_picker_label: "Rang de skill",
+            preview_label: "Aperçu :",
+            save_btn: "Enregistrer",
+            th_pseudo: "Pseudo",
+            th_rank: "Rang de Skill",
+            th_note: "Note / Remarques",
+            th_record: "Bilan",
+            th_actions: "Actions",
+            panel_about: "À Propos",
+            about_text_html: "Bienvenue sur la plateforme officielle du clan <strong>PHNTM</strong>. Nous regroupons l'élite des joueurs compétitifs axés sur la performance, la réactivité et la maîtrise stratégique.",
+            recruit_status_label: "Statut des recrutements :",
+            recruit_status_text: "Sur invitation ou via test de niveau uniquement.",
+            panel_distribution: "Répartition des Rangs",
+            panel_combats: "Journal de Combats",
+            combat_add_btn: "Ajouter un combat",
+            combat_p1_placeholder: "Joueur 1",
+            combat_s1_placeholder: "Score 1",
+            combat_p2_placeholder: "Joueur 2",
+            combat_s2_placeholder: "Score 2",
+            combat_save_btn: "Enregistrer le combat",
+            loading: "Chargement...",
+            footer: "© 2026 PHNTM Clan — Database Opérationnelle",
+            action_edit: "Modifier",
+            action_delete: "Supprimer",
+            no_member_found: "Aucun membre trouvé",
+            note_see_more: "voir plus",
+            note_collapse: "réduire",
+            pending: "En attente",
+            no_combats: "Aucun combat enregistré pour le moment.",
+            alert_need_admin_key_combat: "Entre la clé d'administration pour supprimer un combat.",
+            confirm_delete_combat: "Supprimer ce combat ?",
+            error_prefix: "Erreur : ",
+            error_delete_combat: "Erreur lors de la suppression",
+            need_pseudo: "Veuillez saisir un pseudo !",
+            saved_success: "Enregistré avec succès !",
+            wrong_key: "Clé incorrecte",
+            need_fields_combat: "Merci de remplir la date et les deux joueurs.",
+            combat_saved: "Combat enregistré !",
+            error_saving: "Erreur lors de l'enregistrement",
+            alert_need_admin_key_delete: "Entre la clé d'administration dans le champ prévu avant de supprimer un membre.",
+            confirm_delete_player: (p) => `Supprimer définitivement "${p}" du roster ?`,
+            error_deleting: "Erreur lors de la suppression : ",
+            error_deleting_generic: "Erreur lors de la suppression"
+        },
+        en: {
+            badge_roster: "Official Roster",
+            subtitle: "Operational Database & Official Roster",
+            hub_choose: "Choose a section",
+            card_roster_title: "Roster & Ranks",
+            card_roster_desc: "Members, skill ranks, internal battles",
+            card_new_title: "Gems Ranking",
+            card_new_desc: "Community ranking by gems collected",
+            back_hub: "← Back to hub",
+            coming_soon_title: "New Ranking System",
+            coming_soon_text: "This section is being prepared. Check back a bit later!",
+            stat_total: "Active Members",
+            stat_phantom: "Phantom",
+            stat_immortal: "Immortal",
+            stat_diamant: "Diamond",
+            stat_rookie: "Rookie",
+            panel_roster: "Clan Roster",
+            search_placeholder: "Search for a member...",
+            filter_all: "All ranks",
+            filter_phantom: "Phantom",
+            filter_immortal: "Immortal (all)",
+            filter_diamant: "Diamond (all)",
+            filter_rookie: "Rookie (all)",
+            compact_view: "Compact view",
+            detailed_view: "Detailed view",
+            admin_key_placeholder: "Admin key",
+            edit_mode: "Edit Mode",
+            admin_panel_title: "Add / Edit a Player",
+            pseudo_placeholder: "Exact username",
+            note_placeholder: "Comments / Notes",
+            note_en_placeholder: "English notes — optional",
+            gems_placeholder: "Gems (optional)",
+            panel_gems: "Gems Ranking",
+            th_gems_rank: "#",
+            th_gems: "Gems",
+            no_gems_yet: "No gem data yet.",
+            rank_picker_label: "Skill rank",
+            preview_label: "Preview:",
+            save_btn: "Save",
+            th_pseudo: "Username",
+            th_rank: "Skill Rank",
+            th_note: "Note / Remarks",
+            th_record: "Record",
+            th_actions: "Actions",
+            panel_about: "About",
+            about_text_html: "Welcome to the official platform of the <strong>PHNTM</strong> clan. We bring together elite competitive players focused on performance, reactivity, and strategic mastery.",
+            recruit_status_label: "Recruitment status:",
+            recruit_status_text: "Invitation only, or via skill test.",
+            panel_distribution: "Rank Distribution",
+            panel_combats: "Combat Log",
+            combat_add_btn: "Add a battle",
+            combat_p1_placeholder: "Player 1",
+            combat_s1_placeholder: "Score 1",
+            combat_p2_placeholder: "Player 2",
+            combat_s2_placeholder: "Score 2",
+            combat_save_btn: "Save the battle",
+            loading: "Loading...",
+            footer: "© 2026 PHNTM Clan — Operational Database",
+            action_edit: "Edit",
+            action_delete: "Delete",
+            no_member_found: "No member found",
+            note_see_more: "see more",
+            note_collapse: "collapse",
+            pending: "Pending",
+            no_combats: "No battles recorded yet.",
+            alert_need_admin_key_combat: "Enter the admin key to delete a battle.",
+            confirm_delete_combat: "Delete this battle?",
+            error_prefix: "Error: ",
+            error_delete_combat: "Error while deleting",
+            need_pseudo: "Please enter a username!",
+            saved_success: "Saved successfully!",
+            wrong_key: "Incorrect key",
+            need_fields_combat: "Please fill in the date and both players.",
+            combat_saved: "Battle saved!",
+            error_saving: "Error while saving",
+            alert_need_admin_key_delete: "Enter the admin key in the field before deleting a member.",
+            confirm_delete_player: (p) => `Permanently delete "${p}" from the roster?`,
+            error_deleting: "Error while deleting: ",
+            error_deleting_generic: "Error while deleting"
+        }
+    };
+
+    let currentLang = localStorage.getItem('phntm-lang') === 'en' ? 'en' : 'fr';
+    function t(key) { return I18N[currentLang][key]; }
+
+    function applyStaticI18n() {
+        document.documentElement.lang = currentLang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (I18N[currentLang][key] !== undefined) el.textContent = I18N[currentLang][key];
+        });
+        document.querySelectorAll('[data-i18n-html]').forEach(el => {
+            const key = el.getAttribute('data-i18n-html');
+            if (I18N[currentLang][key] !== undefined) el.innerHTML = I18N[currentLang][key];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (I18N[currentLang][key] !== undefined) el.placeholder = I18N[currentLang][key];
+        });
+        const compactBtn = document.getElementById('compact-toggle-btn');
+        if (compactBtn) compactBtn.textContent = compactView ? t('detailed_view') : t('compact_view');
+        const langBtn = document.getElementById('lang-toggle-btn');
+        if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'fr' ? 'en' : 'fr';
+        localStorage.setItem('phntm-lang', currentLang);
+        applyStaticI18n();
+        setSubtitleText();
+        if (allPlayers.length) filterPlayers();
+        if (allCombats.length !== undefined) renderCombatJournal(allCombats);
+    }
+
+    const RANK_ORDER = ['Phantom', 'Immortal', 'Immortal Mid', 'Immortal Low', 'Diamant', 'Diamant Mid', 'Diamant Low', 'Rookie', 'Rookie Mid', 'Rookie Low'];
+
+    async function loadRoster() {
+        try {
+            const response = await fetch('/api/players');
+            allPlayers = await response.json();
+            updateStatistics(allPlayers);
+            renderTable(allPlayers);
+        } catch (err) {
+            console.error("Erreur de synchronisation :", err);
+        }
+    }
+
+    async function loadCombats() {
+        try {
+            const response = await fetch('/api/combats');
+            allCombats = await response.json();
+            renderCombatJournal(allCombats);
+            if (allPlayers.length) renderTable(allPlayers);
+        } catch (err) {
+            console.error("Erreur de chargement des combats :", err);
+        }
+    }
+
+    function computeRecord(pseudo, combats) {
+        let wins = 0, losses = 0;
+        const lower = (pseudo || '').toLowerCase();
+        combats.forEach(c => {
+            if (c.score1 == null || c.score2 == null || c.score1 === c.score2) return;
+            const isP1 = (c.player1 || '').toLowerCase() === lower;
+            const isP2 = (c.player2 || '').toLowerCase() === lower;
+            if (!isP1 && !isP2) return;
+            const p1Won = c.score1 > c.score2;
+            if ((isP1 && p1Won) || (isP2 && !p1Won)) wins++;
+            else losses++;
+        });
+        return { wins, losses };
+    }
+
+    function renderRecordBadge(pseudo) {
+        const { wins, losses } = computeRecord(pseudo, allCombats);
+        if (wins === 0 && losses === 0) return `<span class="record-badge neutral">—</span>`;
+        return `<span class="record-badge"><span class="record-win">${wins}V</span> - <span class="record-loss">${losses}D</span></span>`;
+    }
+
+    function formatDateFr(isoDate) {
+        const parts = (isoDate || '').split('-');
+        if (parts.length !== 3) return isoDate;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function renderCombatEntry(c) {
+        const hasScore = c.score1 !== null && c.score1 !== undefined && c.score2 !== null && c.score2 !== undefined;
+
+        if (!hasScore) {
+            return `
+                <div class="combat-entry" data-id="${c.id}">
+                    <span class="combat-swords">⚔️</span>
+                    <span class="combat-players">${c.player1} <span class="combat-vs">vs</span> ${c.player2}</span>
+                    <span class="combat-pending">${t('pending')}</span>
+                    <button class="combat-delete-btn" onclick="deleteCombat(${c.id})" title="${t('action_delete')}">✕</button>
+                </div>
+            `;
+        }
+
+        const p1Won = c.score1 > c.score2;
+        const p2Won = c.score2 > c.score1;
+
+        return `
+            <div class="combat-entry" data-id="${c.id}">
+                <span class="combat-swords">⚔️</span>
+                <span class="${p1Won ? 'combat-winner' : 'combat-loser'}">${c.player1}</span>
+                <span class="combat-vs-score">${c.score1} - ${c.score2}</span>
+                <span class="${p2Won ? 'combat-winner' : 'combat-loser'}">${c.player2}</span>
+                <button class="combat-delete-btn" onclick="deleteCombat(${c.id})" title="${t('action_delete')}">✕</button>
+            </div>
+        `;
+    }
+
+    function renderCombatJournal(combats) {
+        const container = document.getElementById('combat-journal');
+        if (!container) return;
+
+        if (!combats || combats.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 1rem 0;">${t('no_combats')}</div>`;
+            return;
+        }
+
+        const groups = {};
+        combats.forEach(c => {
+            if (!groups[c.combat_date]) groups[c.combat_date] = [];
+            groups[c.combat_date].push(c);
+        });
+
+        const dates = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a));
+
+        container.innerHTML = dates.map(date => `
+            <div class="combat-date-group">
+                <div class="combat-date-label">${formatDateFr(date)}</div>
+                ${groups[date].map(c => renderCombatEntry(c)).join('')}
+            </div>
+        `).join('');
+    }
+
+    function toggleCombatForm() {
+        const form = document.getElementById('combat-form');
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function saveCombat() {
+        const date = document.getElementById('combat-date').value;
+        const p1 = document.getElementById('combat-p1').value.trim();
+        const p2 = document.getElementById('combat-p2').value.trim();
+        const s1 = document.getElementById('combat-s1').value;
+        const s2 = document.getElementById('combat-s2').value;
+        const password = document.getElementById('combat-password').value;
+        const btn = document.getElementById('combat-save-btn');
+        const feedback = document.getElementById('combat-feedback');
+
+        feedback.textContent = '';
+        feedback.className = 'form-feedback';
+
+        if (!date || !p1 || !p2) {
+            feedback.textContent = t('need_fields_combat');
+            feedback.classList.add('error');
+            return;
+        }
+
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/combats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    combat_date: date,
+                    player1: p1,
+                    player2: p2,
+                    score1: s1 === '' ? null : parseInt(s1, 10),
+                    score2: s2 === '' ? null : parseInt(s2, 10),
+                    password
+                })
+            });
+
+            const result = await response.json();
+            btn.classList.remove('loading');
+
+            if (result.success) {
+                feedback.textContent = t('combat_saved');
+                feedback.classList.add('success');
+                spawnConfetti();
+                document.getElementById('combat-p1').value = '';
+                document.getElementById('combat-p2').value = '';
+                document.getElementById('combat-s1').value = '';
+                document.getElementById('combat-s2').value = '';
+                loadCombats();
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    toggleCombatForm();
+                }, 900);
+            } else {
+                feedback.textContent = result.error || t('wrong_key');
+                feedback.classList.add('error');
+            }
+        } catch (err) {
+            feedback.textContent = t('error_saving');
+            feedback.classList.add('error');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function deleteCombat(id) {
+        const password = document.getElementById('combat-password').value;
+        if (!password) {
+            alert(t('alert_need_admin_key_combat'));
+            return;
+        }
+        if (!confirm(t('confirm_delete_combat'))) return;
+
+        try {
+            const response = await fetch(`/api/combats/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                loadCombats();
+            } else {
+                alert(t('error_prefix') + (result.error || t('wrong_key')));
+            }
+        } catch (err) {
+            alert(t('error_delete_combat'));
+        }
+    }
+
+    function getRankBadgeClass(rank) {
+        if (!rank) return 'rank-member';
+        const r = rank.trim().toLowerCase();
+        const map = {
+            'phantom': 'rank-phantom',
+            'immortal': 'rank-immortal',
+            'immortal mid': 'rank-immortal-mid',
+            'immortal low': 'rank-immortal-low',
+            'diamant': 'rank-diamant',
+            'diamant mid': 'rank-diamant-mid',
+            'diamant low': 'rank-diamant-low',
+            'rookie': 'rank-rookie',
+            'rookie mid': 'rank-rookie-mid',
+            'rookie low': 'rank-rookie-low',
+        };
+        if (map[r]) return map[r];
+        if (r.includes('phantom')) return 'rank-phantom';
+        if (r.includes('immortal')) return 'rank-immortal';
+        if (r.includes('diamant')) return 'rank-diamant';
+        if (r.includes('rookie')) return 'rank-rookie';
+        return 'rank-member';
+    }
+
+    function rankIndex(rank) {
+        const idx = RANK_ORDER.findIndex(r => r.toLowerCase() === (rank || '').trim().toLowerCase());
+        return idx === -1 ? RANK_ORDER.length : idx;
+    }
+
+    function sortPlayers(players) {
+        const sorted = [...players].sort((a, b) => {
+            if (sortField === 'pseudo') {
+                return (a.pseudo || '').localeCompare(b.pseudo || '');
+            }
+            const diff = rankIndex(a.rank) - rankIndex(b.rank);
+            if (diff !== 0) return diff;
+            return (a.pseudo || '').localeCompare(b.pseudo || '');
+        });
+        return sortDir === 1 ? sorted : sorted.reverse();
+    }
+
+    function rankGroupOf(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return 'Phantom';
+        if (cls.startsWith('rank-immortal')) return 'Immortal';
+        if (cls.startsWith('rank-diamant')) return 'Diamant';
+        if (cls.startsWith('rank-rookie')) return 'Rookie';
+        return 'Autres';
+    }
+
+    function setSort(field) {
+        if (sortField === field) {
+            sortDir *= -1;
+        } else {
+            sortField = field;
+            sortDir = 1;
+        }
+        document.querySelectorAll('.sortable-th').forEach(th => {
+            th.classList.remove('sort-active');
+            const arrow = th.querySelector('.sort-arrow');
+            if (arrow) arrow.textContent = '';
+        });
+        const activeTh = document.getElementById('th-' + field);
+        if (activeTh) {
+            activeTh.classList.add('sort-active');
+            const arrow = activeTh.querySelector('.sort-arrow');
+            if (arrow) arrow.textContent = sortDir === 1 ? '▲' : '▼';
+        }
+        renderTable(currentDisplayed);
+    }
+
+    function rankIcon(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return '✦ ';
+        if (cls.startsWith('rank-immortal')) return '<span class="rank-icon-immortal">◆</span> ';
+        if (cls.startsWith('rank-diamant')) return '<span class="rank-icon-diamant">♦</span> ';
+        if (cls.startsWith('rank-rookie')) return '● ';
+        return '';
+    }
+
+    function splitRankLabel(rank) {
+        if (!rank) return ['MEMBRE', null];
+        const r = rank.trim();
+        const m = r.match(/^(.*)\s+(Mid|Low)$/i);
+        if (m) return [m[1].toUpperCase(), m[2].toUpperCase()];
+        return [r.toUpperCase(), null];
+    }
+
+    function tierIndicator(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return '<span class="phantom-crown">👑</span><span class="phantom-kanji">王</span>';
+        if (cls.startsWith('rank-immortal')) return '<span class="tier-chevrons immortal">▲▲▲</span>';
+        if (cls.startsWith('rank-diamant')) return '<span class="tier-chevrons diamant">▲▲</span>';
+        if (cls.startsWith('rank-rookie')) return '<span class="tier-chevrons rookie">▲</span>';
+        return '';
+    }
+
+    function rowClassFor(rank) {
+        const cls = getRankBadgeClass(rank);
+        if (cls.startsWith('rank-phantom')) return 'row-phantom';
+        if (cls.startsWith('rank-immortal')) return 'row-immortal';
+        if (cls.startsWith('rank-diamant')) return 'row-diamant';
+        if (cls.startsWith('rank-rookie')) return 'row-rookie';
+        return '';
+    }
+
+    function particleFxFor(cls) {
+        if (cls.startsWith('rank-phantom')) return 'fx-phantom';
+        if (cls.startsWith('rank-immortal')) return 'fx-immortal';
+        if (cls.startsWith('rank-diamant')) return 'fx-diamant';
+        return null;
+    }
+
+    function buildBadgeHTML(rank, idx) {
+        const cls = getRankBadgeClass(rank);
+        const [main, sub] = splitRankLabel(rank);
+        const badge = `
+            <span class="rank-badge ${cls}">
+                <span class="rank-main">${rankIcon(rank)}${main}</span>
+                ${sub ? `<span class="rank-sub">${sub}</span>` : ''}
+            </span>
+        `;
+
+        const fxClass = particleFxFor(cls);
+        const particles = fxClass ? `
+            <span class="badge-particles">
+                <span class="particle p1"></span>
+                <span class="particle p2"></span>
+                <span class="particle p3"></span>
+            </span>
+        ` : '';
+
+        const delay = `animation-delay: ${(idx || 0) * 45}ms`;
+
+        let wrapped;
+        if (cls.startsWith('rank-phantom')) {
+            wrapped = `<span class="rank-fx ${fxClass} badge-pop" style="${delay}"><span class="phantom-frame">${badge}</span>${particles}</span>`;
+        } else if (fxClass) {
+            wrapped = `<span class="rank-fx ${fxClass} badge-pop" style="${delay}">${badge}${particles}</span>`;
+        } else {
+            wrapped = `<span class="badge-pop" style="display:inline-block; ${delay}">${badge}</span>`;
+        }
+
+        return `${wrapped}${tierIndicator(rank)}`;
+    }
+
+    function truncateNote(str, len) {
+        if (!str) return '';
+        return str.length > len ? str.slice(0, len).trim() + '…' : str;
+    }
+
+    function noteForDisplay(p) {
+        if (currentLang === 'en' && p.note_en && p.note_en.trim()) return p.note_en;
+        return p.note;
+    }
+
+    function noteCellHTML(note) {
+        if (!note) return '-';
+        if (note.length <= 70) return note;
+        return `<span class="note-preview">${truncateNote(note, 70)}</span><span class="note-full" style="display:none;">${note}</span><button class="note-toggle" onclick="toggleNote(this)">${t('note_see_more')}</button>`;
+    }
+
+    function toggleNote(btn) {
+        const cell = btn.parentElement;
+        const preview = cell.querySelector('.note-preview');
+        const full = cell.querySelector('.note-full');
+        const expanded = full.style.display !== 'none';
+        if (expanded) {
+            full.style.display = 'none';
+            preview.style.display = 'inline';
+            btn.textContent = t('note_see_more');
+        } else {
+            full.style.display = 'inline';
+            preview.style.display = 'none';
+            btn.textContent = t('note_collapse');
+        }
+    }
+
+    let compactView = false;
+
+    function toggleCompactView() {
+        compactView = !compactView;
+        const table = document.getElementById('roster-tbody').closest('table');
+        table.classList.toggle('compact', compactView);
+        document.getElementById('compact-toggle-btn').textContent = compactView ? t('detailed_view') : t('compact_view');
+    }
+
+    function positionMarker(idx) {
+        if (idx === 0) return '<span class="medal gold">🥇</span>';
+        if (idx === 1) return '<span class="medal silver">🥈</span>';
+        if (idx === 2) return '<span class="medal bronze">🥉</span>';
+        return `<span class="position-number">#${idx + 1}</span>`;
+    }
+
+    function avatarHTML(pseudo, rank) {
+        const cls = getRankBadgeClass(rank);
+        const letter = (pseudo || '?').charAt(0).toUpperCase();
+        return `<span class="player-avatar ${cls}">${letter}</span>`;
+    }
+
+    function dividerRow(groupClass) {
+        const labels = {
+            'row-phantom': t('stat_phantom').toUpperCase(),
+            'row-immortal': t('stat_immortal').toUpperCase(),
+            'row-diamant': t('stat_diamant').toUpperCase(),
+            'row-rookie': t('stat_rookie').toUpperCase()
+        };
+        const label = labels[groupClass];
+        return `<tr class="rank-divider"><td colspan="5"><div class="divider-line"></div>${label ? `<div class="divider-label">${label}</div>` : ''}</td></tr>`;
+    }
+
+    function renderTable(players) {
+        const tbody = document.getElementById('roster-tbody');
+        if (!players || players.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">${t('no_member_found')}</td></tr>`;
+            return;
+        }
+
+        const sorted = sortPlayers(players);
+
+        let html = '';
+        let lastGroup = null;
+
+        sorted.forEach((p, idx) => {
+            const group = rowClassFor(p.rank);
+            if (group !== lastGroup) {
+                if (lastGroup !== null) html += dividerRow(group);
+                lastGroup = group;
+            }
+
+            html += `
+                <tr class="${group} ${idx === 0 ? 'top-player' : ''} row-pop-in" style="animation-delay: ${idx * 35}ms">
+                    <td data-label="${t('th_pseudo')}" style="font-weight: 700; color: #fff;">
+                        ${positionMarker(idx)}${avatarHTML(p.pseudo, p.rank)}${p.pseudo}
+                    </td>
+                    <td data-label="${t('th_rank')}">${buildBadgeHTML(p.rank, idx)}</td>
+                    <td data-label="${t('th_note')}" style="color: var(--text-muted); font-size: 0.9rem;">${noteCellHTML(noteForDisplay(p))}</td>
+                    <td data-label="${t('th_record')}">${renderRecordBadge(p.pseudo)}</td>
+                    <td data-label="${t('th_actions')}" style="white-space: nowrap;">
+                        <button class="btn action-btn" onclick="editPlayer(this, '${p.pseudo.replace(/'/g, "\\'")}')">${t('action_edit')}</button>
+                        <button class="btn action-btn danger" onclick="deletePlayer('${p.pseudo.replace(/'/g, "\\'")}')">${t('action_delete')}</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function updateStatistics(players) {
+        if (!players) return;
+        animateValue('stat-total', players.length);
+        animateValue('stat-phantom', players.filter(p => p.rank && p.rank.toUpperCase().includes('PHANTOM')).length);
+        animateValue('stat-immortal', players.filter(p => p.rank && p.rank.toUpperCase().includes('IMMORTAL')).length);
+        animateValue('stat-diamant', players.filter(p => p.rank && p.rank.toUpperCase().includes('DIAMANT')).length);
+        animateValue('stat-rookie', players.filter(p => p.rank && p.rank.toUpperCase().includes('ROOKIE')).length);
+        renderRankDistribution(players);
+    }
+
+    function renderRankDistribution(players) {
+        const container = document.getElementById('rank-distribution');
+        if (!container) return;
+
+        const total = players.length || 1;
+        const groups = [
+            { label: 'Phantom', color: '#a855f7', match: r => r.toUpperCase().includes('PHANTOM') },
+            { label: 'Immortal', color: '#f43f5e', match: r => r.toUpperCase().includes('IMMORTAL') },
+            { label: 'Diamant', color: '#38bdf8', match: r => r.toUpperCase().includes('DIAMANT') },
+            { label: 'Rookie', color: '#22c55e', match: r => r.toUpperCase().includes('ROOKIE') },
+        ];
+
+        container.innerHTML = groups.map(g => {
+            const count = players.filter(p => p.rank && g.match(p.rank.toUpperCase())).length;
+            const pct = Math.round((count / total) * 100);
+            return `
+                <div class="dist-row">
+                    <div class="dist-label"><span>${g.label}</span><span>${count}</span></div>
+                    <div class="dist-bar-track"><div class="dist-bar-fill" data-pct="${pct}" style="background:${g.color}; color:${g.color}; width:0%;"></div></div>
+                </div>
+            `;
+        }).join('');
+
+        requestAnimationFrame(() => {
+            container.querySelectorAll('.dist-bar-fill').forEach(el => {
+                el.style.width = el.dataset.pct + '%';
+            });
+        });
+    }
+
+    function filterPlayers() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const rankFilter = document.getElementById('rank-filter').value;
+
+        const filtered = allPlayers.filter(p => {
+            const matchesQuery = (p.pseudo && p.pseudo.toLowerCase().includes(query)) ||
+                (p.rank && p.rank.toLowerCase().includes(query)) ||
+                (p.note && p.note.toLowerCase().includes(query)) ||
+                (p.note_en && p.note_en.toLowerCase().includes(query));
+
+            if (!matchesQuery) return false;
+            if (rankFilter === 'all') return true;
+
+            const cls = getRankBadgeClass(p.rank);
+            return cls.includes(rankFilter);
+        });
+        renderTable(filtered);
+    }
+
+    function initRankPicker() {
+        const picker = document.getElementById('rank-picker');
+        if (!picker) return;
+        picker.innerHTML = RANK_ORDER.map(r => `
+            <button type="button" class="rank-chip ${getRankBadgeClass(r)}" data-rank="${r}" onclick="selectRank('${r}')">${r}</button>
+        `).join('');
+        selectRank(selectedRank);
+    }
+
+    function selectRank(rank) {
+        selectedRank = rank;
+        document.querySelectorAll('.rank-chip').forEach(chip => {
+            chip.classList.toggle('active', chip.dataset.rank === rank);
+        });
+        const preview = document.getElementById('badge-preview');
+        if (preview) preview.innerHTML = buildBadgeHTML(rank, 0);
+    }
+
+    function togglePasswordVisibility() {
+        const input = document.getElementById('admin-password');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function toggleAdminPanel() {
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function savePlayer() {
+        const pseudo = document.getElementById('player-pseudo').value.trim();
+        const rank = selectedRank;
+        const note = document.getElementById('player-note').value.trim();
+        const note_en = document.getElementById('player-note-en').value.trim();
+        const gemsRaw = document.getElementById('player-gems').value;
+        const gems = gemsRaw === '' ? null : parseInt(gemsRaw, 10);
+        const password = document.getElementById('admin-password').value;
+        const btn = document.getElementById('save-btn');
+        const feedback = document.getElementById('form-feedback');
+
+        feedback.textContent = '';
+        feedback.className = 'form-feedback';
+
+        if (!pseudo) {
+            feedback.textContent = t('need_pseudo');
+            feedback.classList.add('error');
+            return;
+        }
+
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/players', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pseudo, rank, note, note_en, gems, password })
+            });
+
+            const result = await response.json();
+            btn.classList.remove('loading');
+
+            if (result.success) {
+                btn.classList.add('success');
+                feedback.textContent = t('saved_success');
+                feedback.classList.add('success');
+                spawnConfetti();
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    document.getElementById('player-pseudo').value = '';
+                    document.getElementById('player-note').value = '';
+                    document.getElementById('player-note-en').value = '';
+                    document.getElementById('player-gems').value = '';
+                    toggleAdminPanel();
+                    loadRoster();
+                    feedback.textContent = '';
+                }, 700);
+            } else {
+                btn.classList.add('error-shake');
+                feedback.textContent = result.error || t('wrong_key');
+                feedback.classList.add('error');
+                setTimeout(() => btn.classList.remove('error-shake'), 450);
+            }
+        } catch (err) {
+            btn.classList.add('error-shake');
+            feedback.textContent = t('error_saving');
+            feedback.classList.add('error');
+            setTimeout(() => btn.classList.remove('error-shake'), 450);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function editPlayer(btnEl, pseudo) {
+        const player = allPlayers.find(p => p.pseudo === pseudo);
+        if (!player) return;
+
+        const row = btnEl.closest('tr');
+        if (row) {
+            row.classList.add('row-pulse');
+            setTimeout(() => row.classList.remove('row-pulse'), 350);
+        }
+
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = 'block';
+
+        document.getElementById('player-pseudo').value = player.pseudo;
+        selectRank(player.rank || 'Rookie');
+        document.getElementById('player-note').value = player.note || '';
+        document.getElementById('player-note-en').value = player.note_en || '';
+        document.getElementById('player-gems').value = (player.gems === null || player.gems === undefined) ? '' : player.gems;
+
+        document.getElementById('admin-password').focus();
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function deletePlayer(pseudo) {
+        const password = document.getElementById('admin-password').value;
+        if (!password) {
+            alert(t('alert_need_admin_key_delete'));
+            return;
+        }
+
+        if (!confirm(t('confirm_delete_player')(pseudo))) return;
+
+        try {
+            const response = await fetch(`/api/players/${encodeURIComponent(pseudo)}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                loadRoster();
+            } else {
+                alert(t('error_deleting') + (result.error || t('wrong_key')));
+            }
+        } catch (err) {
+            alert(t('error_deleting_generic'));
+        }
+    }
+
+    // ============ EFFETS VISUELS ============
+
+    function initParticleBackground() {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'bg-canvas';
+        document.body.prepend(canvas);
+        const ctx = canvas.getContext('2d');
+        let w, h, particles;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const count = Math.min(45, Math.floor((w * h) / 30000));
+        particles = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25,
+            r: Math.random() * 1.6 + 0.5
+        }));
+
+        function tick() {
+            ctx.clearRect(0, 0, w, h);
+            for (const p of particles) {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > w) p.vx *= -1;
+                if (p.y < 0 || p.y > h) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(200,140,255,0.35)';
+                ctx.fill();
+            }
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i], b = particles[j];
+                    const dx = a.x - b.x, dy = a.y - b.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 110) {
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = `rgba(168,85,247,${0.09 * (1 - dist / 110)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+        tick();
+    }
+
+    function initCursorGlow() {
+        if (window.matchMedia('(hover: none)').matches) return;
+        const glow = document.createElement('div');
+        glow.id = 'cursor-glow';
+        document.body.appendChild(glow);
+        document.addEventListener('mousemove', e => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+    }
+
+    function initFloatingGhosts() {
+        function spawnGhost() {
+            const ghost = document.createElement('div');
+            ghost.className = 'floating-ghost';
+            ghost.textContent = '👻';
+            ghost.style.left = Math.random() * 100 + 'vw';
+            ghost.style.opacity = '0';
+            const duration = 11 + Math.random() * 7;
+            ghost.style.animationDuration = duration + 's';
+            document.body.appendChild(ghost);
+            setTimeout(() => ghost.remove(), duration * 1000 + 500);
+        }
+        spawnGhost();
+        setInterval(spawnGhost, 8500);
+    }
+
+    function initTiltEffect() {
+        document.querySelectorAll('.panel, .stat-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2, cy = rect.height / 2;
+                const rotateX = ((y - cy) / cy) * -3;
+                const rotateY = ((x - cx) / cx) * 3;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    }
+
+    function initRippleEffect() {
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.btn');
+            if (!btn) return;
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 650);
+        });
+    }
+
+    function initScrollReveal() {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    function animateValue(id, end) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const start = parseInt(el.innerText) || 0;
+        if (start === end) { el.innerText = end; return; }
+        const duration = 600;
+        const startTime = performance.now();
+        function step(now) {
+            const progress = Math.min((now - startTime) / duration, 1);
+            el.innerText = Math.round(start + (end - start) * progress);
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    function initTypewriter() {
+        const el = document.getElementById('clan-subtitle');
+        if (!el) return;
+        const text = t('subtitle');
+        el.textContent = '';
+        const cursor = document.createElement('span');
+        cursor.className = 'typewriter-cursor';
+        let i = 0;
+        function type() {
+            if (i <= text.length) {
+                el.textContent = text.slice(0, i);
+                el.appendChild(cursor);
+                i++;
+                setTimeout(type, 35);
+            }
+        }
+        type();
+    }
+
+    function setSubtitleText() {
+        const el = document.getElementById('clan-subtitle');
+        if (!el) return;
+        el.textContent = t('subtitle');
+    }
+
+    function initMagneticTitle() {
+        const title = document.getElementById('clan-title');
+        if (!title) return;
+        const text = title.textContent;
+        title.innerHTML = text.split('').map(ch => `<span class="letter">${ch}</span>`).join('');
+        const letters = title.querySelectorAll('.letter');
+
+        document.addEventListener('mousemove', e => {
+            letters.forEach(letter => {
+                const rect = letter.getBoundingClientRect();
+                const lx = rect.left + rect.width / 2;
+                const ly = rect.top + rect.height / 2;
+                const dx = e.clientX - lx;
+                const dy = e.clientY - ly;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const radius = 110;
+                if (dist < radius) {
+                    const force = (1 - dist / radius) * 10;
+                    const angle = Math.atan2(dy, dx);
+                    letter.style.transform = `translate(${-Math.cos(angle) * force}px, ${-Math.sin(angle) * force}px)`;
+                } else {
+                    letter.style.transform = '';
+                }
+            });
+        });
+    }
+
+    function initKatakanaRain() {
+        const chars = 'ファントムクランロスタァィゥェォッャュョ';
+        function spawnKana() {
+            const el = document.createElement('div');
+            el.className = 'katakana-fall';
+            el.textContent = chars[Math.floor(Math.random() * chars.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.opacity = '0.55';
+            const duration = 7 + Math.random() * 5;
+            el.style.animationDuration = duration + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000 + 300);
+        }
+        setInterval(spawnKana, 2200);
+        for (let i = 0; i < 4; i++) setTimeout(spawnKana, i * 500);
+    }
+
+    function initLightning() {
+        function flash() {
+            const el = document.createElement('div');
+            el.className = 'lightning-flash';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 450);
+            scheduleNext();
+        }
+        function scheduleNext() {
+            const delay = 15000 + Math.random() * 25000;
+            setTimeout(flash, delay);
+        }
+        scheduleNext();
+    }
+
+    function spawnConfetti() {
+        const colors = ['#a855f7', '#6366f1', '#e0263f', '#f43f5e', '#38bdf8', '#ffffff'];
+        for (let i = 0; i < 40; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            const duration = 2 + Math.random() * 1.5;
+            piece.style.animationDuration = duration + 's';
+            piece.style.animationDelay = (Math.random() * 0.3) + 's';
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), (duration + 0.3) * 1000 + 200);
+        }
+    }
+
+    function initHoloBadges() {
+        document.addEventListener('mousemove', e => {
+            const badge = e.target.closest ? e.target.closest('.rank-badge') : null;
+            if (!badge) return;
+            const rect = badge.getBoundingClientRect();
+            const mx = ((e.clientX - rect.left) / rect.width) * 100;
+            const my = ((e.clientY - rect.top) / rect.height) * 100;
+            badge.style.setProperty('--mx', mx + '%');
+            badge.style.setProperty('--my', my + '%');
+        });
+    }
+
+    function initPhantomGlitch() {
+        setInterval(() => {
+            document.querySelectorAll('.rank-phantom').forEach(el => {
+                el.classList.add('glitching');
+                setTimeout(() => el.classList.remove('glitching'), 400);
+            });
+        }, 5000);
+    }
+
+    function initGiantKanjiDrift() {
+        const kanjiList = ['幻', '影', '王', '龍', '忍', '侍', '闇', '魂'];
+        function spawnKanji() {
+            const el = document.createElement('div');
+            el.className = 'giant-kanji';
+            el.textContent = kanjiList[Math.floor(Math.random() * kanjiList.length)];
+            el.style.left = (8 + Math.random() * 74) + 'vw';
+            el.style.top = (8 + Math.random() * 74) + 'vh';
+            const rot = (Math.random() * 30 - 15) + 'deg';
+            el.style.setProperty('--rot', rot);
+            const duration = 9 + Math.random() * 4;
+            el.style.animationDuration = duration + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000 + 300);
+        }
+        spawnKanji();
+        setInterval(spawnKanji, 7000);
+    }
+
+    function initBrushStrokes() {
+        const paths = [
+            'M10,100 C60,20 120,140 180,60 C220,20 260,90 290,50',
+            'M20,30 C80,120 140,10 200,100 C240,150 270,60 295,110',
+            'M15,80 C70,10 130,150 190,40 C230,10 260,120 290,70'
+        ];
+        function spawnStroke() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '300');
+            svg.setAttribute('height', '150');
+            svg.setAttribute('viewBox', '0 0 300 150');
+            svg.classList.add('brush-stroke-anim');
+            svg.style.left = Math.random() * 65 + 'vw';
+            svg.style.top = Math.random() * 70 + 'vh';
+            const d = paths[Math.floor(Math.random() * paths.length)];
+            const color = Math.random() > 0.5 ? '#a855f7' : '#e0263f';
+            svg.innerHTML = `<path d="${d}" stroke="${color}" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="420" stroke-dashoffset="420"><animate attributeName="stroke-dashoffset" from="420" to="0" dur="1.7s" fill="freeze"/></path>`;
+            document.body.appendChild(svg);
+            setTimeout(() => svg.remove(), 4400);
+        }
+        spawnStroke();
+        setInterval(spawnStroke, 9000);
+    }
+
+    function initVisualEffects() {
+        initParticleBackground();
+        initCursorGlow();
+        initRain();
+        initTiltEffect();
+        initRippleEffect();
+        initScrollReveal();
+        initTypewriter();
+        initMagneticTitle();
+        initKatakanaRain();
+        initLightning();
+        initHoloBadges();
+        initPhantomGlitch();
+        initEclipseFlares();
+    }
+
+    function initRain() {
+        const layers = [
+            { cls: 'layer-back', count: 35, hMin: 25, hMax: 45, durMin: 0.85, durMax: 1.3 },
+            { cls: 'layer-mid', count: 45, hMin: 40, hMax: 70, durMin: 0.6, durMax: 0.95 },
+            { cls: 'layer-front', count: 30, hMin: 60, hMax: 100, durMin: 0.42, durMax: 0.65 }
+        ];
+        layers.forEach(layer => {
+            for (let i = 0; i < layer.count; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain-drop ' + layer.cls;
+                drop.style.left = (Math.random() * 100) + 'vw';
+                drop.style.height = (layer.hMin + Math.random() * (layer.hMax - layer.hMin)) + 'px';
+                drop.style.animationDuration = (layer.durMin + Math.random() * (layer.durMax - layer.durMin)) + 's';
+                drop.style.animationDelay = (Math.random() * 3) + 's';
+                document.body.appendChild(drop);
+            }
+        });
+
+        const splashCount = 40;
+        for (let i = 0; i < splashCount; i++) {
+            const splash = document.createElement('div');
+            splash.className = 'rain-splash';
+            splash.style.left = (Math.random() * 100) + 'vw';
+            splash.style.animationDuration = (0.5 + Math.random() * 0.6) + 's';
+            splash.style.animationDelay = (Math.random() * 3) + 's';
+            document.body.appendChild(splash);
+        }
+    }
+
+    function initLanterns() {
+        function spawnLantern() {
+            const el = document.createElement('div');
+            el.className = 'floating-lantern';
+            el.textContent = '🏮';
+            el.style.left = Math.random() * 100 + 'vw';
+            const duration = 12 + Math.random() * 6;
+            el.style.animationDuration = duration + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000 + 300);
+        }
+        spawnLantern();
+        setInterval(spawnLantern, 6000);
+    }
+
+    function initSakuraPetals() {
+        function spawnPetal() {
+            const el = document.createElement('div');
+            el.className = 'sakura-petal';
+            el.textContent = '🌸';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.opacity = '0.6';
+            const duration = 9 + Math.random() * 6;
+            el.style.animationDuration = duration + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000 + 300);
+        }
+        spawnPetal();
+        setInterval(spawnPetal, 5500);
+    }
+
+    function initEclipseFlares() {
+        const burst = document.getElementById('eclipse-burst');
+        if (!burst) return;
+        function flare() {
+            burst.classList.remove('flare-active');
+            void burst.offsetWidth;
+            burst.classList.add('flare-active');
+        }
+        flare();
+        setInterval(flare, 4500);
+    }
+
+    function spinAndNavigate(cardEl, targetView) {
+        if (cardEl.classList.contains('card-selecting')) return;
+        cardEl.classList.add('card-selecting');
+
+        setTimeout(() => {
+            const flash = document.createElement('div');
+            flash.className = 'warp-flash';
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 500);
+        }, 380);
+
+        setTimeout(() => {
+            cardEl.classList.remove('card-selecting');
+            cardEl.style.transform = '';
+            cardEl.style.opacity = '';
+            showView(targetView);
+        }, 700);
+    }
+
+    function showView(view) {
+        ['hub', 'roster', 'comingsoon', 'gems'].forEach(v => {
+            const el = document.getElementById('view-' + v);
+            if (el) el.style.display = (v === view) ? 'block' : 'none';
+        });
+        const footer = document.getElementById('site-footer');
+        if (footer) footer.style.display = (view === 'hub') ? 'none' : 'block';
+        const reflection = document.getElementById('eclipse-reflection');
+        if (reflection) reflection.style.display = (view === 'hub') ? 'block' : 'none';
+        if (view === 'gems') renderGemsRanking();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderGemsRanking() {
+        const tbody = document.getElementById('gems-tbody');
+        if (!tbody) return;
+        const ranked = allPlayers
+            .filter(p => p.gems !== null && p.gems !== undefined)
+            .sort((a, b) => (b.gems || 0) - (a.gems || 0));
+
+        if (!ranked.length) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">${t('no_gems_yet')}</td></tr>`;
+            return;
+        }
+
+        const maxGems = Math.max(...ranked.map(p => p.gems || 0), 1);
+        const medals = ['🥇', '🥈', '🥉'];
+        const rowClasses = ['gems-row-top1', 'gems-row-top2', 'gems-row-top3'];
+
+        tbody.innerHTML = ranked.map((p, idx) => {
+            const pct = Math.max(4, Math.round(((p.gems || 0) / maxGems) * 100));
+            const rankDisplay = idx < 3
+                ? `<span class="gems-rank-medal">${medals[idx]}</span>`
+                : `<span class="gems-rank-num">${idx + 1}</span>`;
+            const rowClass = idx < 3 ? rowClasses[idx] : '';
+            const gemsValueClass = idx === 0 ? 'gems-value-top' : '';
+            return `
+            <tr class="row-pop-in ${rowClass}" style="animation-delay: ${idx * 35}ms">
+                <td data-label="#">${rankDisplay}</td>
+                <td data-label="${t('th_pseudo')}" style="font-weight:700; color:#fff;">${avatarHTML(p.pseudo, p.rank)}${p.pseudo}</td>
+                <td data-label="${t('th_gems')}">
+                    <div class="gems-cell">
+                        <span class="gems-value ${gemsValueClass}">💎 ${p.gems.toLocaleString(currentLang === 'fr' ? 'fr-FR' : 'en-US')}</span>
+                        <div class="gems-bar-track"><div class="gems-bar-fill" style="--target:${pct}%; animation-delay:${idx * 60}ms"></div></div>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.onload = () => {
+        applyStaticI18n();
+        loadRoster();
+        loadCombats();
+        initVisualEffects();
+        initRankPicker();
+        showView('hub');
+        alignBgGlow();
+        initParallax();
+    };
+
+    function initParallax() {
+        const scene = document.querySelector('.orbit-scene');
+        const bgPhoto = document.getElementById('bg-photo');
+        const reflection = document.getElementById('eclipse-reflection');
+        if (!scene) return;
+        let ticking = false;
+        document.addEventListener('mousemove', (e) => {
+            if (document.getElementById('view-hub').style.display === 'none') return;
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 2;
+                const y = (e.clientY / window.innerHeight - 0.5) * 2;
+                scene.style.transform = `translate(${x * 12}px, ${y * 9}px)`;
+                if (reflection) reflection.style.transform = `translate(calc(-50% + ${x * 6}px), calc(-50% + ${y * 4}px))`;
+                if (bgPhoto) bgPhoto.style.transform = `translate(${x * -6}px, ${y * -4}px) scale(1.02)`;
+                ticking = false;
+            });
+        });
+    }
+
+    window.addEventListener('resize', () => {
+        clearTimeout(window.__bgGlowResizeT);
+        window.__bgGlowResizeT = setTimeout(alignBgGlow, 120);
+    });
+
+    function alignBgGlow() {
+        const svg = document.getElementById('bg-photo-glow-svg');
+        if (!svg) return;
+        const photoW = 896, photoH = 729;
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const scale = Math.max(vw / photoW, vh / photoH);
+        const renderedW = photoW * scale, renderedH = photoH * scale;
+        const offsetX = (vw - renderedW) / 2;
+        const offsetY = (vh - renderedH) * 0.15;
+        svg.style.width = renderedW + 'px';
+        svg.style.height = renderedH + 'px';
+        svg.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    }
+</script>
+</body>
+</html>
